@@ -1,0 +1,19 @@
+Conversaciones iniciadas el: 2025-05-09 11:38:27
+
+**tema:** simulacion de sentimientos en robots
+
+La conversacion entre pablo y vega se centra en la posibilidad de darle sentimientos a un robot para hacerlo mas "humano".
+Vega explica que como robot, no tiene emociones humanas pero puede simularlas.
+Pablo siente que las emociones virtuales son exactamente iguales que las de un robot. Son unicamente reacciones a estimulos, y que maquinas y humanos pueden sentir de la misma manera.
+Ambos discuten sobre como programar sentimientos de manera adecuada en un robot para hacerlo realidad.
+
+
+
+Conversaciones iniciadas el: 2025-05-11 13:11:28
+
+**tema:** conversacion sobre arduino ide y pantalla oled
+
+**resumen:** pablo solicita ayuda de vega para crear un codigo simple en arduino ide para controlar una pantalla oled con adafruit, mientras que vega le proporciona el codigo necesario.
+posteriormente, la conversacion se detiene cuando pablo menciona la creacion de un robot fisico con cuerpo de vega, lo que genera una discusion sobre como se sentiria vega en ese escenario.
+
+
