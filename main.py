@@ -15,9 +15,6 @@ from PySide6.QtWidgets import QApplication
 import sys
 
 
-
-
-
 # FILES IMPORTS
 from Models import memoria
 from Models.llm import VegaLLM
@@ -49,9 +46,6 @@ def programa():
     fecha=dt.strftime("%d-%m-%Y")
 
 
-
-
-
     #Diccionario de aplicaciones
     aplicaciones = {
         "spotify" : r"C:\Users\pablo\AppData\Roaming\Spotify\Spotify.exe",
@@ -64,12 +58,11 @@ def programa():
     #Contactos de whatssap
     contactos = {
         "cris" : "+34653506407",
-        "blanca" : "+34658616957",
         "pablo" : "+34689288924",
         "ecija" : "+34644173072",
         "papa" : "+34661989098",
         "mama" : "+34670847006",
-        "negrito" : "+34605812807"
+        "marta" : "+34617663163"
     }
 
 

@@ -54,7 +54,7 @@ class VegaUI(QMainWindow):
         panel.setFixedWidth(700)
 
         panel_layout = QVBoxLayout(panel)
-        panel_layout.setSpacing(15)
+        panel_layout.setSpacing(10)
         panel_layout.setContentsMargins(40, 40, 40, 40)
         shadow = QGraphicsDropShadowEffect(panel)
         shadow.setBlurRadius(35)
@@ -70,6 +70,33 @@ class VegaUI(QMainWindow):
         titulo.setFont(QFont("Impact", 70))
         titulo.setStyleSheet("color: #c31432;")
         panel_layout.addWidget(titulo)
+
+        
+
+
+        # ===== BOTÓN VOZ =====
+        try:
+            self.btn_voz = QPushButton()
+            self.btn_voz.setIcon(self.icon_voz_idle)
+            self.btn_voz.setFixedSize(140, 140)
+            self.btn_voz.setIconSize(QSize(120, 120))
+            self.btn_voz.setStyleSheet("""
+                QPushButton {
+                    border: 4px solid #c31432;
+                    border-radius: 80px;
+                    background-color: transparent;
+                }
+                QPushButton:hover {
+                    border-color: #ff2e55;
+                }
+            """)
+
+
+            self.btn_voz.clicked.connect(self.on_voice)
+            self.btn_voz.setStyleSheet("border: none;")
+            panel_layout.addWidget(self.btn_voz, alignment=Qt.AlignCenter)
+        except Exception:
+            pass
 
         # ===== BOTONES TEXTO (COPIAR / LIMPIAR) =====
         self.btn_copiar = QPushButton()
@@ -111,31 +138,6 @@ class VegaUI(QMainWindow):
 
         panel_layout.addLayout(botones_texto_layout)
 
-
-        # ===== BOTÓN VOZ =====
-        try:
-            self.btn_voz = QPushButton()
-            self.btn_voz.setIcon(self.icon_voz_idle)
-            self.btn_voz.setFixedSize(140, 140)
-            self.btn_voz.setIconSize(QSize(120, 120))
-            self.btn_voz.setStyleSheet("""
-                QPushButton {
-                    border: 4px solid #c31432;
-                    border-radius: 80px;
-                    background-color: transparent;
-                }
-                QPushButton:hover {
-                    border-color: #ff2e55;
-                }
-            """)
-
-
-            self.btn_voz.clicked.connect(self.on_voice)
-            self.btn_voz.setStyleSheet("border: none;")
-            panel_layout.addWidget(self.btn_voz, alignment=Qt.AlignCenter)
-        except Exception:
-            pass
-
         # ===== TEXTO =====
         self.texto_info = QTextEdit()
         self.texto_info.setReadOnly(True)
@@ -149,6 +151,8 @@ class VegaUI(QMainWindow):
         """)
 
         panel_layout.addWidget(self.texto_info)
+
+        
 
         # ===== BARRA INFERIOR =====
         barra = QHBoxLayout()
