@@ -1,7 +1,6 @@
 # OTHER IMPORTS
 from unidecode import unidecode
 import re
-import pyttsx3
 import os
 from datetime import datetime
 import webbrowser
@@ -19,11 +18,12 @@ import sys
 
 
 
+
 # FILES IMPORTS
 from Models import memoria
 from Models.llm import VegaLLM
 from Views.interfaz_qt import VegaUI
-
+from Audio.audio_service import AudioService
 
 #ASSET PATHS
 BASE_DIR = Path(__file__).resolve().parent
@@ -37,20 +37,12 @@ def programa():
     #Definimos el modelo LLM
     llm = VegaLLM()
 
+    #Definimos el servicio de audio
+    audio = AudioService()
+
     #Definir la fecha actual
     dt = datetime.now()
     fecha=dt.strftime("%d-%m-%Y")
-
-
-    engine = pyttsx3.init()
-    #Función para que Vega hable
-    def texto_a_voz(texto):
-        engine.setProperty('rate', 150)
-        engine.setProperty('volume', 1.0)
-        voices = engine.getProperty('voices')
-        engine.setProperty('voice', voices[0].id)
-        engine.say(texto)
-        engine.runAndWait()
 
 
 
@@ -122,7 +114,7 @@ def programa():
             url = f"https://www.youtube.com/results?search_query={query}"
             webbrowser.open(url)
             ui.mostrar_texto(f"Vega: Buscando '{busqueda}' en Youtube.\n")
-            texto_a_voz(f"Buscando '{busqueda}' en YouTube.")
+            audio.hablar(f"Buscando '{busqueda}' en YouTube.")
 
         #Funcion de busqueda en Spotify
         def spotify(busqueda):
@@ -130,7 +122,7 @@ def programa():
             url = f"https://open.spotify.com/search/{query}?flow_ctx=c78838a4-c2a2-48f1-ad9c-77a481bea7fe%3A1737485819#login"
             webbrowser.open(url)
             ui.mostrar_texto(f"Vega: Buscando '{busqueda}' en Spotify.\n")
-            texto_a_voz(f"Buscando '{busqueda}' en Spotify.")
+            audio.hablar(f"Buscando '{busqueda}' en Spotify.")
 
         #Funcion de busqueda
         def buscar():
@@ -149,7 +141,7 @@ def programa():
                         wiki = wikipedia.summary(busqueda, 1)
                         print("Vega: ", wiki)
                         ui.mostrar_texto(f"Vega: {wiki}")
-                        texto_a_voz(f"Vega: {wiki}")
+                        audio.hablar(f"Vega: {wiki}")
                     time.sleep(1.5)
     
 
@@ -166,7 +158,7 @@ def programa():
             cancion = cancion.strip()
             print(f"Vega: Reproduciendo {cancion}")
             ui.mostrar_texto(f"Vega: Reproduciendo {cancion}\n")
-            texto_a_voz(f"Reproduciendo {cancion}")
+            audio.hablar(f"Reproduciendo {cancion}")
             pywhatkit.playonyt(cancion)
             return
 
@@ -174,7 +166,7 @@ def programa():
         if "abre" in question:
             for app in aplicaciones:
                 if app in question:
-                    texto_a_voz(f"Abriendo {app}")
+                    audio.hablar(f"Abriendo {app}")
                     ui.mostrar_texto(f"Vega: Abriendo {app}\n")
                     os.startfile(aplicaciones[app])
             return                 
@@ -185,7 +177,7 @@ def programa():
             for ciudad in ciudades:
                 if ciudad in question:
                     ui.mostrar_texto(f"Vega: El en {ciudad} es este colega:\n")
-                    texto_a_voz(f"El tiempo en {ciudad} es este colega:")
+                    audio.hablar(f"El tiempo en {ciudad} es este colega:")
                     fetch_weather(ciudad)
             return
 
@@ -197,7 +189,7 @@ def programa():
                 # Usar el micrófono como fuente de entrada
                 try:
                     with sr.Microphone() as source:
-                        texto_a_voz(f"Le envio un mensaje a {contacto}. Que quieres que diga?")
+                        audio.hablar(f"Le envio un mensaje a {contacto}. Que quieres que diga?")
                         ui.mostrar_texto(f"\nVega: Le envio un mensaje a {contacto}. Que quieres que diga?:\n")
                         ui.mostrar_texto(f"\nVega: Espera...\n")
                         recognizer.adjust_for_ambient_noise(source, duration=1)
@@ -208,13 +200,13 @@ def programa():
                         mensaje = unidecode(mensaje)
                         mensaje = mensaje.lower()
                         ui.mostrar_texto(f"Pablo: {mensaje}\n")
-                        texto_a_voz(f"enviando {mensaje} a {contacto}")
+                        audio.hablar(f"enviando {mensaje} a {contacto}")
                         ui.mostrar_texto(f"Vega: Enviando '{mensaje}' a {contacto}\n")
 
                         enviar_mensaje(contacto, mensaje)
 
                 except sr.UnknownValueError:
-                    engine.say("Sácate la polla de la boca y repite")
+                    print("No te he entendido, intenta de nuevo.")
                 except sr.RequestError as e:
                     print(f"Error al comunicarse con Google Speech Recognition: {e}")
                 
@@ -230,7 +222,7 @@ def programa():
             resumen = unidecode(resumen)
             memoria.guardar_resumen(ASSETS_TEXT, resumen)
             ui.mostrar_texto("\nVega: Resumen guardado en memoria.\n")
-            texto_a_voz("Resumen guardado en memoria.")
+            audio.hablar("Resumen guardado en memoria.")
             return
 
         if context == None:
@@ -240,7 +232,7 @@ def programa():
             result = unidecode(result)
             print("Vega: ", result)
             ui.mostrar_texto(f"\nVega: {result}\n")
-            texto_a_voz(result)
+            audio.hablar(result)
             context += f"Pablo: {question}\nVega: {result}\n"
             return
 
@@ -250,7 +242,7 @@ def programa():
             result = unidecode(result)
             print("Vega: ", result)
             ui.mostrar_texto(f"\nVega: {result}\n")
-            texto_a_voz(result)
+            audio.hablar(result)
             context += f"Pablo: {question}\nVega: {result}\n"
             return
 
@@ -276,7 +268,7 @@ def programa():
                 ui.mostrar_texto(f"Pablo: {texto}\n")
                 chat(texto)
         except sr.UnknownValueError:
-            engine.say("Error")
+            print("No te he entendido, intenta de nuevo.")
         except sr.RequestError as e:
             print(f"Error al comunicarse con Google Speech Recognition: {e}")
         return texto
