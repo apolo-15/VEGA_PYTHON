@@ -20,6 +20,8 @@ from Models.llm import VegaLLM
 from Views.interfaz_qt import VegaUI
 from Audio.audio_service import AudioService
 from Audio.voice_listener import VoiceListenerThread
+from Models.Servicios.busquedas import BUSCADORES, limpiar_busqueda, buscar
+from Models.Servicios.reproduccion import reproducir_youtube
 
 
 #ASSET PATHS
@@ -94,60 +96,35 @@ def programa():
         instrucciones_resumen = memoria.leer_instrucciones_resumen(ASSETS_TEXT)
         memoria_texto = memoria.leer_memoria(ASSETS_TEXT)
 
-        #Definimos el contexto de la conversación vacío
-        #Funcion de busqueda en Youtube
-        def youtube(busqueda):
-            query = busqueda.replace(" ","+")
-            url = f"https://www.youtube.com/results?search_query={query}"
-            webbrowser.open(url)
-            ui.mostrar_texto(f"Vega: Buscando '{busqueda}' en Youtube.\n")
-            audio.hablar(f"Buscando '{busqueda}' en YouTube.")
-
-        #Funcion de busqueda en Spotify
-        def spotify(busqueda):
-            query = busqueda.replace(" ","+")
-            url = f"https://open.spotify.com/search/{query}?flow_ctx=c78838a4-c2a2-48f1-ad9c-77a481bea7fe%3A1737485819#login"
-            webbrowser.open(url)
-            ui.mostrar_texto(f"Vega: Buscando '{busqueda}' en Spotify.\n")
-            audio.hablar(f"Buscando '{busqueda}' en Spotify.")
-
-        #Funcion de busqueda
-        def buscar():
-            for bus in busquedas:
-                if bus in question:
-                    busqueda = question.replace("Vega","")
-                    busqueda = busqueda.replace("busca","")
-                    busqueda = busqueda.replace(f"en {bus}","")
-                    busqueda = busqueda.strip()
-                    if bus == "youtube":
-                        youtube(busqueda)
-                    elif bus == "spotify":
-                        spotify(busqueda)
-                    elif bus == "wikipedia":
-                        wikipedia.set_lang("es")
-                        wiki = wikipedia.summary(busqueda, 1)
-                        print("Vega: ", wiki)
-                        ui.mostrar_texto(f"Vega: {wiki}")
-                        audio.hablar(f"Vega: {wiki}")
-                    time.sleep(1.5)
-    
 
         #Buscar
-        if "busca" in question:
-            buscar()
-            return
+        if "busca" in question.lower():
+            for proveedor in BUSCADORES:
+                if proveedor in question.lower():
+                    texto = limpiar_busqueda(question, proveedor)
+                    resultado = buscar(proveedor, texto)
+                    if resultado:
+                        ui.mostrar_texto(f"Vega: {resultado}\n")
+                        audio.hablar(resultado)
+
+                    return
             
 
-        #Reproducir videos en youtube
-        if "reproduce" in question:
-            cancion = question.replace("Vega","")
-            cancion = question.replace("reproduce","")
-            cancion = cancion.strip()
-            print(f"Vega: Reproduciendo {cancion}")
-            ui.mostrar_texto(f"Vega: Reproduciendo {cancion}\n")
-            audio.hablar(f"Reproduciendo {cancion}")
-            pywhatkit.playonyt(cancion)
+        #Reproducir en YouTube
+        if "reproduce" in question.lower():
+            texto = question.lower()
+            texto = texto.replace("vega", "")
+            texto = texto.replace("reproduce", "")
+            texto = texto.strip()
+
+            resultado = reproducir_youtube(texto)
+
+            if resultado:
+                ui.mostrar_texto(f"Vega: {resultado}\n")
+                audio.hablar(resultado)
+
             return
+
 
 
         #Tiempo

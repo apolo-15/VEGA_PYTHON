@@ -17,7 +17,7 @@ class AudioService:
 
         try:
             engine = pyttsx3.init()
-            engine.setProperty('rate', 150)
+            engine.setProperty('rate', 180)
             engine.setProperty('volume', 1.0)
 
             voices = engine.getProperty('voices')
