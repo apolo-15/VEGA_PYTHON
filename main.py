@@ -6,7 +6,6 @@ from datetime import datetime
 import webbrowser
 import time
 import pywhatkit
-import speech_recognition as sr
 import wikipedia
 import webbrowser
 import pyautogui as pag
@@ -24,6 +23,8 @@ from Models import memoria
 from Models.llm import VegaLLM
 from Views.interfaz_qt import VegaUI
 from Audio.audio_service import AudioService
+from Audio.voice_listener import VoiceListenerThread
+
 
 #ASSET PATHS
 BASE_DIR = Path(__file__).resolve().parent
@@ -31,7 +32,10 @@ ASSETS_IMAGES = BASE_DIR / "Assets_Images"
 ASSETS_TEXT = BASE_DIR / "Assets_Text"
 
 
+# Lugar temporal
+voice_thread = None
 context = None
+
 def programa():
 
     #Definimos el modelo LLM
@@ -185,30 +189,26 @@ def programa():
         #Enviar mensajes
         if "envia" in question:
             def mensaje_oir(contacto):
-                recognizer = sr.Recognizer()
-                # Usar el micrófono como fuente de entrada
-                try:
-                    with sr.Microphone() as source:
-                        audio.hablar(f"Le envio un mensaje a {contacto}. Que quieres que diga?")
-                        ui.mostrar_texto(f"\nVega: Le envio un mensaje a {contacto}. Que quieres que diga?:\n")
-                        ui.mostrar_texto(f"\nVega: Espera...\n")
-                        recognizer.adjust_for_ambient_noise(source, duration=1)
-                        ui.mostrar_texto(f"Vega: Di algo:\n")
-                        # Escuchar el audio del micrófono
-                        audio = recognizer.listen(source)
-                        mensaje = recognizer.recognize_google(audio, language="es-ES")
-                        mensaje = unidecode(mensaje)
-                        mensaje = mensaje.lower()
-                        ui.mostrar_texto(f"Pablo: {mensaje}\n")
-                        audio.hablar(f"enviando {mensaje} a {contacto}")
-                        ui.mostrar_texto(f"Vega: Enviando '{mensaje}' a {contacto}\n")
+                audio.hablar(f"Le envío un mensaje a {contacto}. ¿Qué quieres que diga?")
+                ui.mostrar_texto(
+                    f"\nVega: Le envío un mensaje a {contacto}. ¿Qué quieres que diga?\n"
+                )
+                ui.mostrar_texto("\nVega: Espera...\n")
+                ui.mostrar_texto("Vega: Di algo:\n")
 
-                        enviar_mensaje(contacto, mensaje)
+                mensaje = audio.escuchar()
 
-                except sr.UnknownValueError:
-                    print("No te he entendido, intenta de nuevo.")
-                except sr.RequestError as e:
-                    print(f"Error al comunicarse con Google Speech Recognition: {e}")
+                if mensaje is None:
+                    audio.hablar("No te he entendido, intenta de nuevo")
+                    ui.mostrar_texto("Vega: No te he entendido, intenta de nuevo\n")
+                    return
+
+                ui.mostrar_texto(f"Pablo: {mensaje}\n")
+                audio.hablar(f"Enviando {mensaje} a {contacto}")
+                ui.mostrar_texto(f"Vega: Enviando '{mensaje}' a {contacto}\n")
+
+                enviar_mensaje(contacto, mensaje)
+
                 
             for contacto in contactos:
                 if contacto in question:
@@ -249,29 +249,25 @@ def programa():
 
     #Voz a Texto:
     def reconocer_voz():
-        recognizer = sr.Recognizer()
-        # Usar el micrófono como fuente de entrada
-        
-        try:
-            with sr.Microphone() as source:
-                ui.mostrar_texto(f"\nVega: Espera...\n")
-                recognizer.adjust_for_ambient_noise(source, duration=1)           
-                ui.mostrar_texto(f"Vega: Di algo:\n")
+        global voice_thread
 
-                # Escuchar el audio del micrófono
-                audio = recognizer.listen(source)
-                texto = recognizer.recognize_google(audio, language="es-ES")
-                texto = unidecode(texto)
-                texto = texto.lower()
-                texto = texto.replace("venga","vega")
-                texto = texto.replace("vega", "Vega")
-                ui.mostrar_texto(f"Pablo: {texto}\n")
-                chat(texto)
-        except sr.UnknownValueError:
-            print("No te he entendido, intenta de nuevo.")
-        except sr.RequestError as e:
-            print(f"Error al comunicarse con Google Speech Recognition: {e}")
-        return texto
+        ui.set_listening(True)
+
+        voice_thread = VoiceListenerThread(audio)
+
+        def procesar_texto(texto):
+            texto = texto.replace("venga", "vega")
+            texto = texto.replace("vega", "Vega")
+            ui.mostrar_texto(f"Pablo: {texto}\n")
+            chat(texto)
+
+        voice_thread.texto_reconocido.connect(procesar_texto)
+        voice_thread.finished_listening.connect(lambda: ui.set_listening(False))
+
+        voice_thread.start()
+
+
+
 
     app = QApplication(sys.argv)
 

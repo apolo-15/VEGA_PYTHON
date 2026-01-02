@@ -1,7 +1,6 @@
-# audio/audio_service.py
-
 import pyttsx3
 from unidecode import unidecode
+import speech_recognition as sr
 
 
 class AudioService:
@@ -56,3 +55,32 @@ class AudioService:
         except Exception as e:
             print(f"[AudioService] Error al hablar: {e}")
             self._tts_available = False
+
+    def escuchar(self, timeout=None):
+        """
+        Escucha por micrófono y devuelve el texto reconocido en minúsculas.
+        Devuelve None si falla o no se reconoce nada.
+        """
+        try:
+            recognizer = sr.Recognizer()
+
+            with sr.Microphone() as source:
+                recognizer.adjust_for_ambient_noise(source, duration=1)
+                audio = recognizer.listen(source, timeout=timeout)
+
+            texto = recognizer.recognize_google(audio, language="es-ES")
+            texto = unidecode(texto).lower()
+            return texto
+
+        except sr.UnknownValueError:
+            # No se ha entendido la voz
+            return None
+
+        except sr.RequestError as e:
+            print(f"[AudioService] Error con Speech Recognition: {e}")
+            return None
+
+        except Exception as e:
+            print(f"[AudioService] Error al escuchar: {e}")
+            return None
+
