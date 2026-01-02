@@ -1,7 +1,6 @@
 # OTHER IMPORTS
 from unidecode import unidecode
 import re
-import os
 from datetime import datetime
 import webbrowser
 import time
@@ -44,15 +43,6 @@ def programa():
     #Definir la fecha actual
     dt = datetime.now()
     fecha=dt.strftime("%d-%m-%Y")
-
-
-    #Diccionario de aplicaciones
-    aplicaciones = {
-        "spotify" : r"C:\Users\pablo\AppData\Roaming\Spotify\Spotify.exe",
-        "discord" : r"C:\Users\pablo\AppData\Local\Discord\Update.exe",
-        "steam" : r"C:\Program Files (x86)\Steam\Steam.exe",
-        "google" : r"C:\Program Files\Google\Chrome\Application\chrome.exe"
-    }
 
 
     #Contactos de whatssap
@@ -159,15 +149,6 @@ def programa():
             pywhatkit.playonyt(cancion)
             return
 
-        #Abrir aplicaciones
-        if "abre" in question:
-            for app in aplicaciones:
-                if app in question:
-                    audio.hablar(f"Abriendo {app}")
-                    ui.mostrar_texto(f"Vega: Abriendo {app}\n")
-                    os.startfile(aplicaciones[app])
-            return                 
-        
 
         #Tiempo
         if "tiempo hace" in question:
