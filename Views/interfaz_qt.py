@@ -1,7 +1,9 @@
-from PySide6.QtWidgets import (QMainWindow,QWidget,QLabel,QPushButton,QTextEdit,QLineEdit,QVBoxLayout,QHBoxLayout,)
-from PySide6.QtGui import QPixmap, QFont, QIcon
+from PySide6.QtWidgets import (QMainWindow,QWidget,QLabel,QPushButton,QTextEdit,QLineEdit,QVBoxLayout,QHBoxLayout,QGraphicsDropShadowEffect, QApplication)
+from PySide6.QtGui import QPixmap, QFont, QIcon, QColor
 from PySide6.QtCore import Qt, QSize
 from pathlib import Path
+
+
 
 
 class VegaUI(QMainWindow):
@@ -54,6 +56,13 @@ class VegaUI(QMainWindow):
         panel_layout = QVBoxLayout(panel)
         panel_layout.setSpacing(15)
         panel_layout.setContentsMargins(40, 40, 40, 40)
+        shadow = QGraphicsDropShadowEffect(panel)
+        shadow.setBlurRadius(35)
+        shadow.setOffset(0, 0)
+        shadow.setColor(QColor(195, 20, 50, 140))  # rojo VEGA con alpha
+
+        panel.setGraphicsEffect(shadow)
+
 
         # ===== TÍTULO =====
         titulo = QLabel("VEGA")
@@ -61,6 +70,47 @@ class VegaUI(QMainWindow):
         titulo.setFont(QFont("Impact", 70))
         titulo.setStyleSheet("color: #c31432;")
         panel_layout.addWidget(titulo)
+
+        # ===== BOTONES TEXTO (COPIAR / LIMPIAR) =====
+        self.btn_copiar = QPushButton()
+        self.btn_copiar.setIcon(QIcon(str(self.assets_images / "copiar.png")))
+        self.btn_copiar.setIconSize(QSize(36, 36))
+        self.btn_copiar.setFixedSize(40, 40)
+        self.btn_copiar.setToolTip("COPIAR")
+        self.btn_copiar.clicked.connect(self._copiar_texto)
+
+        self.btn_limpiar = QPushButton()
+        self.btn_limpiar.setIcon(QIcon(str(self.assets_images / "papelera.png")))
+        self.btn_limpiar.setIconSize(QSize(36, 36))
+        self.btn_limpiar.setFixedSize(40, 40)
+        self.btn_limpiar.setToolTip("LIMPIAR")
+        self.btn_limpiar.clicked.connect(self._limpiar_texto)
+
+        for btn in (self.btn_copiar, self.btn_limpiar):
+            btn.setStyleSheet("""
+                QPushButton {
+                    border: 2px solid #c31432;
+                    border-radius: 6px;
+                    background-color: #FBFBFB;
+                    padding: 2px;
+                }
+                QPushButton:hover {
+                    background-color: #ffe6eb;
+                }
+                QPushButton:pressed {
+                    background-color: #ffccd5;
+                    border-color: #ff2e55;
+                }
+            """)
+
+
+        botones_texto_layout = QHBoxLayout()
+        botones_texto_layout.addStretch()
+        botones_texto_layout.addWidget(self.btn_copiar)
+        botones_texto_layout.addWidget(self.btn_limpiar)
+
+        panel_layout.addLayout(botones_texto_layout)
+
 
         # ===== BOTÓN VOZ =====
         try:
@@ -156,6 +206,15 @@ class VegaUI(QMainWindow):
 
         if self.on_text:
             self.on_text(texto)
+
+    def _copiar_texto(self):
+        texto = self.texto_info.toPlainText()
+        if texto.strip():
+            QApplication.clipboard().setText(texto)
+
+    def _limpiar_texto(self):
+        self.texto_info.clear()
+
 
     def set_listening(self, listening: bool):
         if not hasattr(self, "btn_voz"):
