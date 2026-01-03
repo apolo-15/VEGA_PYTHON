@@ -31,7 +31,7 @@ def handle_chat(
     memory_text = memory.read_memory(assets_text)
 
     # Search
-    if "search" in normalized_input:
+    if "busca" in normalized_input:
         for provider in SEARCH_PROVIDERS:
             if provider in normalized_input:
                 query = clean_search_query(user_input, provider)
@@ -43,11 +43,11 @@ def handle_chat(
                 return
 
     # Play media
-    if "play" in normalized_input:
+    if "reproduce" in normalized_input:
         query = (
             normalized_input
             .replace("vega", "")
-            .replace("play", "")
+            .replace("reproduce", "")
             .strip()
         )
 
@@ -59,31 +59,31 @@ def handle_chat(
         return
 
     # Weather
-    if "weather" in normalized_input:
+    if "tiempo hace" in normalized_input:
         for city in cities:
             if city in normalized_input:
                 data = get_weather(city)
 
                 if data:
-                    ui.show_text(f"Vega: Weather in {city}:\n")
-                    audio_service.speak(f"Weather in {city}")
+                    ui.show_text(f"Vega: El tiempo en {city} es este:\n")
+                    audio_service.speak(f"El tiempo en {city} es este")
                     for line in data:
                         ui.show_text(f"{line}\n")
                 else:
                     ui.show_text(
-                        f"Vega: Unable to get weather for {city}\n"
+                        f"Vega: No he podido obtener el tiempo de {city}\n"
                     )
                     audio_service.speak(
-                        f"Unable to get weather for {city}"
+                        f"No he podido obtener el tiempo de {city}"
                     )
                 return
 
     # Messaging
-    if "send" in normalized_input:
+    if "envía" in normalized_input or "envia" in normalized_input:
         for contact in contacts:
             if contact in normalized_input:
                 message = None
-                triggers = ["that ", "saying ", "message "]
+                triggers = ["que ", "diciendo ", "mensaje "]
 
                 for trigger in triggers:
                     if trigger in normalized_input:
@@ -92,17 +92,17 @@ def handle_chat(
 
                 if not message:
                     audio_service.speak(
-                        f"What message do you want to send to {contact}?"
+                        f"¿Qué mensaje quieres enviar a {contact}?"
                     )
                     ui.show_text(
-                        f"\nVega: What message do you want to send to {contact}?\n"
+                        f"\nVega: ¿Qué mensaje quieres enviar a {contact}?\n"
                     )
                     message = audio_service.listen()
 
                     if not message:
-                        audio_service.speak("I didn't understand you")
+                        audio_service.speak("No te he entendido")
                         ui.show_text(
-                            "Vega: I didn't understand you\n"
+                            "Vega: No te he entendido\n"
                         )
                         return
 
@@ -110,50 +110,18 @@ def handle_chat(
 
                 if sent:
                     audio_service.speak(
-                        f"Message sent to {contact}"
+                        f"Mensaje enviado a {contact}"
                     )
                     ui.show_text(
-                        f"Vega: Message sent to {contact}\n"
+                        f"Vega: Mensaje enviado a {contact}\n"
                     )
                 else:
                     audio_service.speak(
-                        "Unable to send the message"
+                        "No he podido enviar el mensaje"
                     )
                     ui.show_text(
-                        "Vega: Unable to send the message\n"
+                        "Vega: No he podido enviar el mensaje\n"
                     )
                 return
 
-    # Cut / summarize
-    if "cut" in normalized_input:
-        summary = llm.summarize(instructions_summary, context)
-        summary = unidecode(summary)
-
-        memory.save_summary(assets_text, summary)
-
-        ui.show_text(
-            "\nVega: Summary saved to memory.\n"
-        )
-        audio_service.speak(
-            "Summary saved to memory."
-        )
-        return
-
-    # Normal conversation
-    if context is None:
-        context = ""
-
-    result = llm.respond(
-        current_date,
-        instructions,
-        memory_text,
-        context,
-        user_input,
-    )
-    result = unidecode(result)
-
-    ui.show_text(f"\nVega: {result}\n")
-    audio_service.speak(result)
-
-    context += f"Pablo: {user_input}\nVega: {result}\n"
-    context_holder["context"] = context
+    # Cut / summari

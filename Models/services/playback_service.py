@@ -6,4 +6,4 @@ def play_youtube(query):
         return None
 
     pywhatkit.playonyt(query)
-    return f"Playing {query}"
+    return f"Reproduciendo {query}"

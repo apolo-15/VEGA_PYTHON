@@ -9,8 +9,8 @@ SEARCH_PROVIDERS = ("youtube", "spotify", "wikipedia")
 def clean_search_query(text, provider):
     text = text.lower()
     text = text.replace("vega", "")
-    text = text.replace("search", "")
-    text = text.replace(f"on {provider}", "")
+    text = text.replace("busca", "")
+    text = text.replace(f"en {provider}", "")
     return text.strip()
 
 
@@ -19,13 +19,13 @@ def search(provider, text):
 
     if provider == "youtube":
         url = f"https://www.youtube.com/results?search_query={query}"
-        message = f"Searching '{text}' on YouTube"
+        message = f"Buscando '{text}' en YouTube"
         webbrowser.open(url)
         return message
 
     if provider == "spotify":
         url = f"https://open.spotify.com/search/{query}"
-        message = f"Searching '{text}' on Spotify"
+        message = f"Buscando '{text}' en Spotify"
         webbrowser.open(url)
         return message
 
