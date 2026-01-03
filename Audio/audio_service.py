@@ -10,37 +10,34 @@ class AudioService:
 
     def _init_tts(self):
         """
-        Inicializa el motor TTS solo cuando se necesita.
+        Initializes the TTS engine lazily, only when needed.
         """
         if self._engine is not None:
             return
 
         try:
             engine = pyttsx3.init()
-            engine.setProperty('rate', 180)
-            engine.setProperty('volume', 1.0)
+            engine.setProperty("rate", 180)
+            engine.setProperty("volume", 1.0)
 
-            voices = engine.getProperty('voices')
+            voices = engine.getProperty("voices")
             if voices:
-                engine.setProperty('voice', voices[0].id)
+                engine.setProperty("voice", voices[0].id)
 
             self._engine = engine
 
-        except Exception as e:
-            # Si falla el audio, no debe caer VEGA
-            print(f"[AudioService] Error inicializando TTS: {e}")
+        except Exception as error:
+            # If TTS fails, VEGA must continue silently
+            print(f"[AudioService] Error initializing TTS: {error}")
             self._tts_available = False
             self._engine = None
 
-    def hablar(self, texto: str):
+    def speak(self, text: str):
         """
-        Convierte texto a voz. Si el audio no está disponible,
-        falla en silencio.
+        Converts text to speech.
+        Fails silently if audio is not available.
         """
-        if not self._tts_available:
-            return
-
-        if not texto:
+        if not self._tts_available or not text:
             return
 
         self._init_tts()
@@ -49,17 +46,17 @@ class AudioService:
             return
 
         try:
-            texto = unidecode(texto)
-            self._engine.say(texto)
+            text = unidecode(text)
+            self._engine.say(text)
             self._engine.runAndWait()
-        except Exception as e:
-            print(f"[AudioService] Error al hablar: {e}")
+        except Exception as error:
+            print(f"[AudioService] Error while speaking: {error}")
             self._tts_available = False
 
-    def escuchar(self, timeout=None):
+    def listen(self, timeout=None):
         """
-        Escucha por micrófono y devuelve el texto reconocido en minúsculas.
-        Devuelve None si falla o no se reconoce nada.
+        Listens through the microphone and returns recognized text in lowercase.
+        Returns None if recognition fails or no speech is detected.
         """
         try:
             recognizer = sr.Recognizer()
@@ -68,19 +65,17 @@ class AudioService:
                 recognizer.adjust_for_ambient_noise(source, duration=1)
                 audio = recognizer.listen(source, timeout=timeout)
 
-            texto = recognizer.recognize_google(audio, language="es-ES")
-            texto = unidecode(texto).lower()
-            return texto
+            text = recognizer.recognize_google(audio, language="es-ES")
+            text = unidecode(text).lower()
+            return text
 
         except sr.UnknownValueError:
-            # No se ha entendido la voz
             return None
 
-        except sr.RequestError as e:
-            print(f"[AudioService] Error con Speech Recognition: {e}")
+        except sr.RequestError as error:
+            print(f"[AudioService] Speech Recognition request error: {error}")
             return None
 
-        except Exception as e:
-            print(f"[AudioService] Error al escuchar: {e}")
+        except Exception as error:
+            print(f"[AudioService] Error while listening: {error}")
             return None
-

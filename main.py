@@ -1,75 +1,67 @@
-# LIBS IMPORTS
+# LIBRARY IMPORTS
 from datetime import datetime
 from pathlib import Path
-from PySide6.QtWidgets import QApplication
 import sys
 
-
-# FILES IMPORTS
-from Models.llm import VegaLLM
-from Views.interfaz_qt import VegaUI
-from Audio.audio_service import AudioService
-from Models.Servicios.tiempo import CIUDADES
-from Models.Servicios.mensajeria import CONTACTOS
-from Controllers.chat_controller import chat
-from Controllers.voice_controller import reconocer_voz
+from PySide6.QtWidgets import QApplication
 
 
-#ASSET PATHS
+# PROJECT IMPORTS
+from models.llm_model import VegaLLM
+from views.main_window import VegaUI
+from audio.audio_service import AudioService
+from models.services.weather_service import CITIES
+from models.services.messaging_service import CONTACTS
+from controllers.chat_controller import handle_chat
+from controllers.voice_controller import recognize_voice
+
+
+# ASSET PATHS
 BASE_DIR = Path(__file__).resolve().parent
-ASSETS_IMAGES = BASE_DIR / "Assets_Images"
-ASSETS_TEXT = BASE_DIR / "Assets_Text"
+ASSETS_IMAGES = BASE_DIR / "assets_images"
+ASSETS_TEXT = BASE_DIR / "assets_text"
 
 
-#GLOBAL VARIABLES
+# GLOBAL STATE
 voice_thread = None
 
-def programa():
 
-    #Definimos el modelo LLM
+def main():
     llm = VegaLLM()
+    audio_service = AudioService()
 
-    #Definimos el servicio de audio
-    audio = AudioService()
-
-    #Definir la fecha actual
-    dt = datetime.now()
-    fecha=dt.strftime("%d-%m-%Y")
-
+    current_date = datetime.now().strftime("%d-%m-%Y")
 
     context_holder = {"context": None}
 
-
-    def on_text(texto):
-        chat(
-            texto,
+    def handle_text_input(text: str):
+        handle_chat(
+            text,
             ui,
-            audio,
+            audio_service,
             llm,
-            CONTACTOS,
-            CIUDADES,
+            CONTACTS,
+            CITIES,
             ASSETS_TEXT,
-            fecha,
+            current_date,
             context_holder,
         )
 
-    def on_voice():
+    def handle_voice_input():
         global voice_thread
-        voice_thread = reconocer_voz(ui, audio, on_text)
-
+        voice_thread = recognize_voice(ui, audio_service, handle_text_input)
 
     app = QApplication(sys.argv)
 
     ui = VegaUI(
-            ASSETS_IMAGES,
-            on_text=on_text,
-            on_voice=on_voice,
-        )
-
+        ASSETS_IMAGES,
+        on_text=handle_text_input,
+        on_voice=handle_voice_input,
+    )
 
     ui.show()
     sys.exit(app.exec())
 
-    
+
 if __name__ == "__main__":
-    programa()
+    main()
