@@ -2,7 +2,8 @@ import webbrowser
 import time
 import pyautogui as pag
 
-CONTACTOS = {
+
+CONTACTS = {
     "cris": "+34653506407",
     "pablo": "+34689288924",
     "ecija": "+34644173072",
@@ -12,11 +13,11 @@ CONTACTOS = {
 }
 
 
-def enviar_whatsapp(numero, mensaje):
-    if not numero or not mensaje:
+def send_whatsapp(phone_number, message):
+    if not phone_number or not message:
         return False
 
-    url = f"https://web.whatsapp.com/send?phone={numero}&text={mensaje}"
+    url = f"https://web.whatsapp.com/send?phone={phone_number}&text={message}"
     webbrowser.open(url)
 
     time.sleep(10)

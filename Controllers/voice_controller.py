@@ -1,21 +1,22 @@
-from Audio.voice_listener import VoiceListenerThread
+from audio.voice_listener import VoiceListenerThread
 
-def reconocer_voz(ui, audio, on_text):
+
+def recognize_voice(ui, audio_service, on_text_callback):
     ui.set_listening(True)
 
-    voice_thread = VoiceListenerThread(audio)
+    voice_thread = VoiceListenerThread(audio_service)
 
-    def procesar_texto(texto):
-        texto = texto.replace("venga", "vega")
-        texto = texto.replace("vega", "Vega")
-        ui.mostrar_texto(f"Pablo: {texto}\n")
-        on_text(texto)
+    def process_text(text: str):
+        text = text.replace("venga", "vega")
+        text = text.replace("vega", "Vega")
 
-    voice_thread.texto_reconocido.connect(procesar_texto)
+        ui.show_text(f"Pablo: {text}\n")
+        on_text_callback(text)
+
+    voice_thread.text_recognized.connect(process_text)
     voice_thread.finished_listening.connect(
         lambda: ui.set_listening(False)
     )
 
     voice_thread.start()
-
     return voice_thread

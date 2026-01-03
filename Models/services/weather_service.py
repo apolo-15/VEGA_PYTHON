@@ -1,20 +1,22 @@
 import requests
 
-CIUDADES = {
+
+CITIES = {
     "sevilla": (37.3886, -5.9823),
     "madrid": (40.4168, -3.7038),
     "malaga": (36.7213, -4.4214),
 }
 
-def obtener_tiempo(ciudad):
-    if ciudad not in CIUDADES:
+
+def get_weather(city):
+    if city not in CITIES:
         return None
 
-    lat, lon = CIUDADES[ciudad]
+    latitude, longitude = CITIES[city]
 
     url = (
         "https://api.open-meteo.com/v1/forecast"
-        f"?latitude={lat}&longitude={lon}"
+        f"?latitude={latitude}&longitude={longitude}"
         "&current_weather=true"
     )
 
@@ -27,10 +29,10 @@ def obtener_tiempo(ciudad):
     if "current_weather" not in data:
         return None
 
-    clima = data["current_weather"]
+    weather_data = data["current_weather"]
 
     return [
-        f"📍 {ciudad.capitalize()}",
-        f"🌡️ {clima['temperature']} °C",
-        f"💨 {clima['windspeed']} km/h",
+        f"📍 {city.capitalize()}",
+        f"🌡️ {weather_data['temperature']} °C",
+        f"💨 {weather_data['windspeed']} km/h",
     ]

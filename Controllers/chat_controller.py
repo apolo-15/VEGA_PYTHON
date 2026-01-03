@@ -1,125 +1,127 @@
 from unidecode import unidecode
-from Models import memoria
-from Models.Servicios.busquedas import BUSCADORES, limpiar_busqueda, buscar
-from Models.Servicios.reproduccion import reproducir_youtube
-from Models.Servicios.tiempo import obtener_tiempo
-from Models.Servicios.mensajeria import enviar_whatsapp
+
+from models import memory
+from models.services.search_service import (
+    SEARCH_PROVIDERS,
+    clean_search_query,
+    search,
+)
+from models.services.playback_service import play_youtube
+from models.services.weather_service import get_weather
+from models.services.messaging_service import send_whatsapp
 
 
-def chat(
-    question,
+def handle_chat(
+    user_input,
     ui,
-    audio,
+    audio_service,
     llm,
-    contactos,
-    ciudades,
+    contacts,
+    cities,
     assets_text,
-    fecha,
+    current_date,
     context_holder,
 ):
-    q = question.lower()
+    normalized_input = user_input.lower()
     context = context_holder["context"]
 
-    # Leer memoria
-    instrucciones = memoria.leer_instrucciones(assets_text)
-    instrucciones_resumen = memoria.leer_instrucciones_resumen(assets_text)
-    memoria_texto = memoria.leer_memoria(assets_text)
+    # Load memory and instructions
+    instructions = memory.read_instructions(assets_text)
+    instructions_summary = memory.read_instructions_summary(assets_text)
+    memory_text = memory.read_memory(assets_text)
 
-    # Buscar
-    if "busca" in q:
-        for proveedor in BUSCADORES:
-            if proveedor in q:
-                texto = limpiar_busqueda(question, proveedor)
-                resultado = buscar(proveedor, texto)
-                if resultado:
-                    ui.mostrar_texto(f"Vega: {resultado}\n")
-                    audio.hablar(resultado)
+    # Search
+    if "busca" in normalized_input:
+        for provider in SEARCH_PROVIDERS:
+            if provider in normalized_input:
+                query = clean_search_query(user_input, provider)
+                result = search(provider, query)
+
+                if result:
+                    ui.show_text(f"Vega: {result}\n")
+                    audio_service.speak(result)
                 return
 
-    # Reproducir
-    if "reproduce" in q:
-        texto = q.replace("vega", "").replace("reproduce", "").strip()
-        resultado = reproducir_youtube(texto)
+    # Play media
+    if "reproduce" in normalized_input:
+        query = (
+            normalized_input
+            .replace("vega", "")
+            .replace("reproduce", "")
+            .strip()
+        )
 
-        if resultado:
-            ui.mostrar_texto(f"Vega: {resultado}\n")
-            audio.hablar(resultado)
+        result = play_youtube(query)
+
+        if result:
+            ui.show_text(f"Vega: {result}\n")
+            audio_service.speak(result)
         return
 
-    # Tiempo
-    if "tiempo hace" in q:
-        for ciudad in ciudades:
-            if ciudad in q:
-                datos = obtener_tiempo(ciudad)
+    # Weather
+    if "tiempo hace" in normalized_input:
+        for city in cities:
+            if city in normalized_input:
+                data = get_weather(city)
 
-                if datos:
-                    ui.mostrar_texto(f"Vega: El tiempo en {ciudad} es este:\n")
-                    audio.hablar(f"El tiempo en {ciudad} es este")
-                    for linea in datos:
-                        ui.mostrar_texto(f"{linea}\n")
+                if data:
+                    ui.show_text(f"Vega: El tiempo en {city} es este:\n")
+                    audio_service.speak(f"El tiempo en {city} es este")
+                    for line in data:
+                        ui.show_text(f"{line}\n")
                 else:
-                    ui.mostrar_texto(f"Vega: No he podido obtener el tiempo de {ciudad}\n")
-                    audio.hablar(f"No he podido obtener el tiempo de {ciudad}")
+                    ui.show_text(
+                        f"Vega: No he podido obtener el tiempo de {city}\n"
+                    )
+                    audio_service.speak(
+                        f"No he podido obtener el tiempo de {city}"
+                    )
                 return
 
-    # Mensajería
-    if "envia" in q:
-        for contacto in contactos:
-            if contacto in q:
-                mensaje = None
-                claves = ["que ", "diciendo ", "mensaje "]
+    # Messaging
+    if "envía" in normalized_input or "envia" in normalized_input:
+        for contact in contacts:
+            if contact in normalized_input:
+                message = None
+                triggers = ["que ", "diciendo ", "mensaje "]
 
-                for clave in claves:
-                    if clave in q:
-                        mensaje = q.split(clave, 1)[1].strip()
+                for trigger in triggers:
+                    if trigger in normalized_input:
+                        message = normalized_input.split(trigger, 1)[1].strip()
                         break
 
-                if not mensaje:
-                    audio.hablar(f"¿Qué mensaje quieres enviar a {contacto}?")
-                    ui.mostrar_texto(
-                        f"\nVega: ¿Qué mensaje quieres enviar a {contacto}?\n"
+                if not message:
+                    audio_service.speak(
+                        f"¿Qué mensaje quieres enviar a {contact}?"
                     )
-                    mensaje = audio.escuchar()
+                    ui.show_text(
+                        f"\nVega: ¿Qué mensaje quieres enviar a {contact}?\n"
+                    )
+                    message = audio_service.listen()
 
-                    if not mensaje:
-                        audio.hablar("No te he entendido")
-                        ui.mostrar_texto("Vega: No te he entendido\n")
+                    if not message:
+                        audio_service.speak("No te he entendido")
+                        ui.show_text(
+                            "Vega: No te he entendido\n"
+                        )
                         return
 
-                enviado = enviar_whatsapp(contactos[contacto], mensaje)
+                sent = send_whatsapp(contacts[contact], message)
 
-                if enviado:
-                    audio.hablar(f"Mensaje enviado a {contacto}")
-                    ui.mostrar_texto(f"Vega: Mensaje enviado a {contacto}\n")
+                if sent:
+                    audio_service.speak(
+                        f"Mensaje enviado a {contact}"
+                    )
+                    ui.show_text(
+                        f"Vega: Mensaje enviado a {contact}\n"
+                    )
                 else:
-                    audio.hablar("No he podido enviar el mensaje")
-                    ui.mostrar_texto("Vega: No he podido enviar el mensaje\n")
+                    audio_service.speak(
+                        "No he podido enviar el mensaje"
+                    )
+                    ui.show_text(
+                        "Vega: No he podido enviar el mensaje\n"
+                    )
                 return
 
-    # Cortar
-    if "corta" in q:
-        resumen = llm.resumir(instrucciones_resumen, context)
-        resumen = unidecode(resumen)
-        memoria.guardar_resumen(assets_text, resumen)
-        ui.mostrar_texto("\nVega: Resumen guardado en memoria.\n")
-        audio.hablar("Resumen guardado en memoria.")
-        return
-
-    # Conversación normal
-    if context is None:
-        context = ""
-
-    result = llm.responder(
-        fecha,
-        instrucciones,
-        memoria_texto,
-        context,
-        question,
-    )
-    result = unidecode(result)
-
-    ui.mostrar_texto(f"\nVega: {result}\n")
-    audio.hablar(result)
-
-    context += f"Pablo: {question}\nVega: {result}\n"
-    context_holder["context"] = context
+    # Cut / summari
