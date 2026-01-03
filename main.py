@@ -1,14 +1,6 @@
-# OTHER IMPORTS
+# LIBS IMPORTS
 from unidecode import unidecode
-import re
 from datetime import datetime
-import webbrowser
-import time
-import pywhatkit
-import wikipedia
-import webbrowser
-import pyautogui as pag
-import requests
 from pathlib import Path
 from PySide6.QtWidgets import QApplication
 import sys
@@ -22,6 +14,8 @@ from Audio.audio_service import AudioService
 from Audio.voice_listener import VoiceListenerThread
 from Models.Servicios.busquedas import BUSCADORES, limpiar_busqueda, buscar
 from Models.Servicios.reproduccion import reproducir_youtube
+from Models.Servicios.tiempo import obtener_tiempo
+from Models.Servicios.mensajeria import enviar_whatsapp
 
 
 #ASSET PATHS
@@ -62,33 +56,9 @@ def programa():
     ciudades = ["sevilla", "malaga", "madrid"]
 
 
-    #Definimos las busquedas
-    busquedas = ("youtube","spotify","wikipedia")
 
 
-
-    #Funcion para enviar un mensaje por whatsapp
-    def enviar_mensaje(contacto, mensaje):
-        webbrowser.open(f"https://web.whatsapp.com/send?phone={contactos[contacto]}&text={mensaje}")
-        time.sleep(10)
-        pag.press("enter")
-
-
-
-
-    #Tiempo
-    def fetch_weather(ciudad):
-        response = requests.get(f"https://es.wttr.in/{ciudad}")
-        if response.status_code == 200:
-            lines = response.text.splitlines()
-            for i, line in enumerate(lines[2:7], start=1):
-                ui.mostrar_texto(re.sub(r'\x1b\[[0-9;]*m', '', line))
-        else:
-            print(f"Error al obtener la página: {response.status_code}")
-        
-
-    #Definimos el programa con el que interactuamos con VEGA
-    
+    #Definimos el programa con el que interactuamos con VEGA   
     def chat(question):
         global context
         # Leemos los distintos archivos
@@ -128,43 +98,66 @@ def programa():
 
 
         #Tiempo
-        if "tiempo hace" in question:
+        if "tiempo hace" in question.lower():
             for ciudad in ciudades:
-                if ciudad in question:
-                    ui.mostrar_texto(f"Vega: El en {ciudad} es este colega:\n")
-                    audio.hablar(f"El tiempo en {ciudad} es este colega:")
-                    fetch_weather(ciudad)
-            return
+                if ciudad in question.lower():
+                    datos = obtener_tiempo(ciudad)
+
+                    if datos:
+                        ui.mostrar_texto(f"Vega: El tiempo en {ciudad} es este:\n")
+                        audio.hablar(f"El tiempo en {ciudad} es este")
+
+                        for linea in datos:
+                            ui.mostrar_texto(f"{linea}\n")
+
+                    else:
+                        ui.mostrar_texto(f"Vega: No he podido obtener el tiempo de {ciudad}\n")
+                        audio.hablar(f"No he podido obtener el tiempo de {ciudad}")
+
+                    return
+
 
 
         #Enviar mensajes
-        if "envia" in question:
-            def mensaje_oir(contacto):
-                audio.hablar(f"Le envío un mensaje a {contacto}. ¿Qué quieres que diga?")
-                ui.mostrar_texto(
-                    f"\nVega: Le envío un mensaje a {contacto}. ¿Qué quieres que diga?\n"
-                )
-                ui.mostrar_texto("\nVega: Espera...\n")
-                ui.mostrar_texto("Vega: Di algo:\n")
+        if "envia" in question.lower():
+            texto = question.lower()
 
-                mensaje = audio.escuchar()
+            for contacto in contactos:
+                if contacto in texto:
 
-                if mensaje is None:
-                    audio.hablar("No te he entendido, intenta de nuevo")
-                    ui.mostrar_texto("Vega: No te he entendido, intenta de nuevo\n")
+                    mensaje = None
+                    claves = ["que ", "diciendo ", "mensaje "]
+
+                    for clave in claves:
+                        if clave in texto:
+                            mensaje = texto.split(clave, 1)[1]
+                            break
+
+                    if mensaje:
+                        mensaje = mensaje.strip()
+
+                    if not mensaje:
+                        audio.hablar(f"¿Qué mensaje quieres enviar a {contacto}?")
+                        ui.mostrar_texto(f"\nVega: ¿Qué mensaje quieres enviar a {contacto}?\n")
+
+                        mensaje = audio.escuchar()
+
+                        if not mensaje:
+                            audio.hablar("No te he entendido")
+                            ui.mostrar_texto("Vega: No te he entendido\n")
+                            return
+
+                    enviado = enviar_whatsapp(contactos[contacto], mensaje)
+
+                    if enviado:
+                        audio.hablar(f"Mensaje enviado a {contacto}")
+                        ui.mostrar_texto(f"Vega: Mensaje enviado a {contacto}\n")
+                    else:
+                        audio.hablar("No he podido enviar el mensaje")
+                        ui.mostrar_texto("Vega: No he podido enviar el mensaje\n")
+
                     return
 
-                ui.mostrar_texto(f"Pablo: {mensaje}\n")
-                audio.hablar(f"Enviando {mensaje} a {contacto}")
-                ui.mostrar_texto(f"Vega: Enviando '{mensaje}' a {contacto}\n")
-
-                enviar_mensaje(contacto, mensaje)
-
-                
-            for contacto in contactos:
-                if contacto in question:
-                    mensaje_oir(contacto)
-            return       
 
         #Detener el programa
         if "corta" in question:
