@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 from typing import List, Dict
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class MemoryManager:
     def __init__(self, assets_memory_path: Path) -> None:
@@ -34,13 +34,34 @@ class MemoryManager:
 
         return relevant_memory
 
-    def apply_memory_updates(self, updates: Dict) -> None:
-        # validate and apply updates
-        pass
 
-    def cleanup_temporal_memory(self) -> None:
-        # remove expired temporal entries
-        pass
+    
+
+    def cleanup_temporal_memory(self, max_age_days: int = 7) -> None:
+        entries = self.temporal_memory.get("entries", [])
+
+        if not entries:
+            return
+
+        cutoff_date = datetime.now() - timedelta(days=max_age_days)
+
+        cleaned_entries = []
+
+        for entry in entries:
+            entry_date_str = entry.get("date")
+            if not entry_date_str:
+                continue
+
+            try:
+                entry_date = datetime.strptime(entry_date_str, "%Y-%m-%d")
+            except ValueError:
+                continue
+
+            if entry_date >= cutoff_date:
+                cleaned_entries.append(entry)
+
+        self.temporal_memory["entries"] = cleaned_entries
+
 
     def _load_json(self, filename: str) -> Dict:
         file_path = self.assets_memory_path / filename
@@ -63,8 +84,8 @@ class MemoryManager:
 
         user = self.core_memory.get("user", {})
 
-        if user.get("name"):
-            memory.append(f"{user['name']} is the user")
+        #if user.get("name"):
+        #    memory.append(f"{user['name']} is the user")
 
         if user.get("studies"):
             memory.append(f"Pablo studies {user['studies']}")
@@ -112,7 +133,8 @@ class MemoryManager:
     def apply_memory_updates(self, updates: Dict) -> None:
         if not isinstance(updates, dict):
             return
-
+        
+        self.cleanup_temporal_memory()
         self._apply_core_updates(updates.get("core", {}))
         self._apply_contextual_updates(updates.get("contextual", {}))
         self._apply_temporal_updates(updates.get("temporal", {}))
@@ -123,7 +145,6 @@ class MemoryManager:
 
     def _apply_core_updates(self, core_updates: Dict) -> None:
         additions = core_updates.get("add", [])
-        updates = core_updates.get("update", [])
 
         traits = self.core_memory.setdefault("traits", {}).setdefault("personality", [])
 
