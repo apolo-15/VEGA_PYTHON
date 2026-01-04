@@ -92,8 +92,9 @@ class VegaUI(QMainWindow):
             self.voice_button.setIconSize(QSize(120, 120))
             self.voice_button.setStyleSheet("""
                 QPushButton {
-                    border: none
+                    border: none;
                     background-color: transparent;
+                    outline: none;
                 }                
                 """)
             self.voice_button.clicked.connect(self.on_voice)
@@ -116,6 +117,34 @@ class VegaUI(QMainWindow):
         self.clear_button.setToolTip("Clear")
         self.clear_button.clicked.connect(self._clear_text)
 
+        self.add_contact_button = QPushButton()
+        self.add_contact_button.setIcon(
+            QIcon(str(self.assets_images / "add_contact.png"))
+        )
+        self.add_contact_button.setIconSize(QSize(36, 36))
+        self.add_contact_button.setFixedSize(40, 40)
+        self.add_contact_button.setToolTip("Add contact")
+        self.add_contact_button.clicked.connect(self._open_add_contact_dialog)
+
+
+        self.add_contact_button.setStyleSheet("""
+            QPushButton {
+                border: 2px solid #c31432;
+                border-radius: 20px;
+                background-color: #FBFBFB;
+                padding: 2px;
+            }
+            QPushButton:hover {
+                background-color: #ffe6eb;
+            }
+            QPushButton:pressed {
+                background-color: #ffccd5;
+                border-color: #ff2e55;
+            }
+        """)
+
+
+
         for button in (self.copy_button, self.clear_button):
             button.setStyleSheet("""
                 QPushButton {
@@ -134,6 +163,7 @@ class VegaUI(QMainWindow):
             """)
 
         text_buttons_layout = QHBoxLayout()
+        text_buttons_layout.addWidget(self.add_contact_button)
         text_buttons_layout.addStretch()
         text_buttons_layout.addWidget(self.copy_button)
         text_buttons_layout.addWidget(self.clear_button)
@@ -175,19 +205,6 @@ class VegaUI(QMainWindow):
         """)
         send_button.clicked.connect(self._send_text)
         input_bar.addWidget(send_button)
-
-        add_contact_button = QPushButton("Add contact")
-        add_contact_button.setStyleSheet("""
-            background-color: #FBFBFB;
-            color: #c31432;
-            font-weight: bold;
-            border: 2px solid #c31432;
-            border-radius: 6px;
-            padding: 6px 12px;
-        """)
-        add_contact_button.clicked.connect(self._open_add_contact_dialog)
-
-        input_bar.addWidget(add_contact_button)
 
 
         panel_layout.addLayout(input_bar)

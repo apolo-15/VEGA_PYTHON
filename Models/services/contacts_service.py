@@ -34,3 +34,16 @@ def _save_contacts(contacts: dict, assets_text: Path) -> None:
 
     with open(contacts_file, "w", encoding="utf-8") as file:
         json.dump(contacts, file, indent=4, ensure_ascii=False)
+
+        
+def delete_contact(name: str, assets_text: Path) -> bool:
+    contacts = get_contacts(assets_text)
+
+    key = name.lower().strip()
+
+    if key not in contacts:
+        return False
+
+    del contacts[key]
+    _save_contacts(contacts, assets_text)
+    return True
