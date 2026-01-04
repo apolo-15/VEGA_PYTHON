@@ -1,0 +1,11 @@
+PySide6
+langchain
+langchain-ollama
+ollama
+speechrecognition
+pyttsx3
+pywhatkit
+wikipedia
+unidecode
+requests
+pyautogui
