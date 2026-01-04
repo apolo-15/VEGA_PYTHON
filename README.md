@@ -66,3 +66,139 @@ Filosofía
 VEGA está planteado deliberadamente como un proyecto orientado al aprendizaje.
 
 Se da prioridad a la legibilidad del código, a la refactorización y a decisiones de diseño explícitas, por encima de la rapidez o del número de funcionalidades. No se trata de construir un asistente cerrado, sino de mantener una base sólida sobre la que seguir experimentando y mejorando con el tiempo.
+
+
+
+////
+NAMING CONVENTIONS
+
+VEGA – Naming Conventions
+=========================
+
+This document describes the naming conventions used consistently
+throughout the VEGA project.
+
+The goal of these conventions is to ensure clarity, consistency,
+and maintainability across the entire codebase.
+
+
+1. General rules
+----------------
+
+- All code, identifiers, and comments are written in English.
+- Naming is explicit and descriptive; abbreviations are avoided unless
+  they are widely accepted.
+- Consistency is preferred over cleverness.
+
+
+2. Directories and files
+------------------------
+
+- Directories use snake_case.
+- Python files use snake_case.
+
+Examples:
+- main.py
+- main_window.py
+- chat_controller.py
+- contacts_service.py
+- assets_images/
+- assets_text/
+
+
+3. Classes
+----------
+
+- Class names use CamelCase.
+- Class names are nouns and describe a single responsibility.
+
+Examples:
+- VegaUI
+- VegaLLM
+- AddContactDialog
+- AudioService
+
+
+4. Functions and methods
+------------------------
+
+- Function and method names use snake_case.
+- Names are verbs or verb phrases describing the action performed.
+
+Examples:
+- handle_chat
+- recognize_voice
+- get_contacts
+- add_contact
+- delete_contact
+- load_contacts
+
+
+5. Variables
+------------
+
+- Variable names use snake_case.
+- Names are descriptive and avoid single-letter identifiers
+  except in very limited scopes.
+
+Examples:
+- audio_service
+- current_date
+- contacts_list
+- phone_number
+- assets_text
+
+
+6. Constants
+------------
+
+- Constants use UPPER_SNAKE_CASE.
+- Constants are defined at module level.
+
+Examples:
+- ASSETS_IMAGES
+- ASSETS_TEXT
+- CITIES
+
+
+7. Services
+-----------
+
+- Service modules are named using snake_case and end with _service
+  when appropriate.
+- Services expose clear, stateless functions and do not depend on UI.
+
+Examples:
+- contacts_service.py
+- weather_service.py
+- messaging_service.py
+
+
+8. User Interface
+-----------------
+
+- UI classes follow CamelCase.
+- UI-related logic is kept inside view classes.
+- Business logic and persistence are handled outside the UI layer.
+
+
+9. Language separation
+----------------------
+
+- Code identifiers are always in English.
+- User-facing strings may be localized (e.g. Spanish),
+  but logic and naming remain in English.
+
+
+10. Philosophy
+--------------
+
+These conventions are intentionally simple.
+
+They are designed to:
+- reduce cognitive load,
+- avoid ambiguity,
+- make refactoring easier,
+- and keep the project readable over time.
+
+Consistency across the project takes precedence over external style guides.
