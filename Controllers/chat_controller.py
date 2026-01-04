@@ -1,10 +1,13 @@
+# LIBRS IMPORTS
 from unidecode import unidecode
+import json
 
+# FILE IMPORTS
 from models import memory
 from models.services.search_service import (
-SEARCH_PROVIDERS,
-clean_search_query,
-search,
+    SEARCH_PROVIDERS,
+    clean_search_query,
+    search,
 )
 from models.services.playback_service import play_youtube
 from models.services.weather_service import get_weather
@@ -158,6 +161,23 @@ def handle_chat(
 
     ui.show_text(f"\nVega: {result}\n")
     audio_service.speak(result)
+
+    # ---- MEMORY PROPOSAL (LEVEL 2 WRITE) ----
+    memory_proposal_instructions = (
+        assets_text / "instructions_memory_proposal.txt"
+    ).read_text(encoding="utf-8")
+
+    proposal_raw = llm.summarize(
+        memory_proposal_instructions,
+        context + f"Pablo: {user_input}\nVega: {result}\n"
+    )
+
+    try:
+        proposal = json.loads(proposal_raw)
+        memory_manager.apply_memory_updates(proposal)
+    except Exception:
+        pass
+    # ----------------------------------------
 
     context += f"Pablo: {user_input}\nVega: {result}\n"
     context_holder["context"] = context

@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 from typing import List, Dict
-
+from datetime import datetime
 
 class MemoryManager:
     def __init__(self, assets_memory_path: Path) -> None:
@@ -108,4 +108,48 @@ class MemoryManager:
             memory.append(f"Pablo is currently feeling {value}")
 
         return memory
+    
+    def apply_memory_updates(self, updates: Dict) -> None:
+        if not isinstance(updates, dict):
+            return
 
+        self._apply_core_updates(updates.get("core", {}))
+        self._apply_contextual_updates(updates.get("contextual", {}))
+        self._apply_temporal_updates(updates.get("temporal", {}))
+
+        self._save_json("core.json", self.core_memory)
+        self._save_json("contextual.json", self.contextual_memory)
+        self._save_json("temporal.json", self.temporal_memory)
+
+    def _apply_core_updates(self, core_updates: Dict) -> None:
+        additions = core_updates.get("add", [])
+        updates = core_updates.get("update", [])
+
+        traits = self.core_memory.setdefault("traits", {}).setdefault("personality", [])
+
+        for item in additions:
+            if item not in traits:
+                traits.append(item)
+
+    def _apply_contextual_updates(self, contextual_updates: Dict) -> None:
+        additions = contextual_updates.get("add", [])
+
+        notes = self.contextual_memory.setdefault("recurring_topics", [])
+
+        for item in additions:
+            if item not in notes:
+                notes.append(item)
+
+
+
+    def _apply_temporal_updates(self, temporal_updates: Dict) -> None:
+        additions = temporal_updates.get("add", [])
+
+        entries = self.temporal_memory.setdefault("entries", [])
+
+        for item in additions:
+            entries.append({
+                "type": "mood",
+                "value": item,
+                "date": datetime.now().strftime("%Y-%m-%d")
+            })
