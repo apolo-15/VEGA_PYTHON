@@ -1,0 +1,22 @@
+{
+  "projects": [
+    {
+      "name": "VEGA",
+      "status": "activo",
+      "focus": "desarrollo del asistente",
+      "notes": []
+    }
+  ],
+  "studies": [
+    {
+      "name": "fisica",
+      "status": "en curso",
+      "notes": []
+    }
+  ],
+  "recurring_topics": [],
+  "current_interests": [],
+  "meta": {
+    "last_updated": null
+  }
+}

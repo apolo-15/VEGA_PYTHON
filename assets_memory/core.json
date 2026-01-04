@@ -1,0 +1,40 @@
+{
+  "user": {
+    "name": "Pablo",
+    "studies": "fisica",
+    "skills": [
+      "programacion",
+      "bateria"
+    ],
+    "hobbies": [
+      "skate"
+    ],
+    "reading_preferences": [
+      "ciencia ficcion"
+    ],
+    "music_taste": [
+      "rock",
+      "rap",
+      "alternativo"
+    ],
+    "style_preferences": [
+      "moda alternativa"
+    ],
+    "likes": [
+      "cerveza"
+    ],
+    "attraction_preferences": [
+      "pelirrojas"
+    ]
+  },
+  "relationships": {
+    "known_people": []
+  },
+  "traits": {
+    "personality": []
+  },
+  "meta": {
+    "created_at": "2025-01-15",
+    "last_updated": null
+  }
+}
