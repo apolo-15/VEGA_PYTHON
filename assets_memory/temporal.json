@@ -4,6 +4,21 @@
       "type": "mood",
       "value": "motivado",
       "date": "2026-01-05"
+    },
+    {
+      "type": "mood",
+      "value": "motivation",
+      "date": "2026-01-04"
+    },
+    {
+      "type": "mood",
+      "value": "sadness",
+      "date": "2026-01-04"
+    },
+    {
+      "type": "mood",
+      "value": "depression",
+      "date": "2026-01-04"
     }
   ],
   "meta": {

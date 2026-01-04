@@ -14,7 +14,19 @@
       "notes": []
     }
   ],
-  "recurring_topics": [],
+  "recurring_topics": [
+    {
+      "project": "current work",
+      "task": "overcoming a challenge"
+    },
+    {
+      "objective": "completed task"
+    },
+    {
+      "id": "project",
+      "status": "pending"
+    }
+  ],
   "current_interests": [],
   "meta": {
     "last_updated": null
