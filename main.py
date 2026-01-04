@@ -14,13 +14,16 @@ from models.services.weather_service import CITIES
 from controllers.chat_controller import handle_chat
 from controllers.voice_controller import recognize_voice
 from models.services.contacts_service import get_contacts
+from models.intent_classifier import IntentClassifier
+from models.memory_manager import MemoryManager
+
 
 
 # ASSET PATHS
 BASE_DIR = Path(__file__).resolve().parent
 ASSETS_IMAGES = BASE_DIR / "assets_images"
 ASSETS_TEXT = BASE_DIR / "assets_text"
-
+ASSETS_MEMORY = BASE_DIR / "assets_memory"
 
 # GLOBAL STATE
 voice_thread = None
@@ -29,6 +32,9 @@ voice_thread = None
 def main():
     llm = VegaLLM()
     audio_service = AudioService()
+    intent_classifier = IntentClassifier()
+    memory_manager = MemoryManager(ASSETS_MEMORY)
+
 
     current_date = datetime.now().strftime("%d-%m-%Y")
 
@@ -45,6 +51,9 @@ def main():
             ASSETS_TEXT,
             current_date,
             context_holder,
+            intent_classifier,
+            memory_manager,
+
         )
 
 

@@ -2,14 +2,13 @@ from unidecode import unidecode
 
 from models import memory
 from models.services.search_service import (
-    SEARCH_PROVIDERS,
-    clean_search_query,
-    search,
+SEARCH_PROVIDERS,
+clean_search_query,
+search,
 )
 from models.services.playback_service import play_youtube
 from models.services.weather_service import get_weather
 from models.services.messaging_service import send_whatsapp
-
 
 def handle_chat(
     user_input,
@@ -21,14 +20,14 @@ def handle_chat(
     assets_text,
     current_date,
     context_holder,
-):
+    intent_classifier,
+    memory_manager,
+    ):
     normalized_input = user_input.lower()
     context = context_holder["context"]
 
-    # Load memory and instructions
+    # Load system instructions (only system prompt)
     instructions = memory.read_instructions(assets_text)
-    instructions_summary = memory.read_instructions_summary(assets_text)
-    memory_text = memory.read_memory(assets_text)
 
     # Search
     if "busca" in normalized_input:
@@ -124,10 +123,12 @@ def handle_chat(
                     )
                 return
 
-
+    # Manual memory snapshot (legacy, controlled)
     if "corta" in normalized_input:
         if context is None:
             context = ""
+
+        instructions_summary = memory.read_instructions_summary(assets_text)
 
         summary = llm.summarize(instructions_summary, context)
         summary = unidecode(summary)
@@ -138,17 +139,21 @@ def handle_chat(
         audio_service.speak("Resumen guardado en memoria.")
         return
 
-    # Normal conversation
+    # Normal conversation (LEVEL 2 FLOW)
     if context is None:
         context = ""
+
+    intent = intent_classifier.classify(user_input)
+    relevant_memory = memory_manager.get_relevant_memory(intent)
 
     result = llm.respond(
         current_date,
         instructions,
-        memory_text,
+        relevant_memory,
         context,
         user_input,
     )
+
     result = unidecode(result)
 
     ui.show_text(f"\nVega: {result}\n")
@@ -156,4 +161,3 @@ def handle_chat(
 
     context += f"Pablo: {user_input}\nVega: {result}\n"
     context_holder["context"] = context
-

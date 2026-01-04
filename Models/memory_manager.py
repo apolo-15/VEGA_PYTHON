@@ -104,7 +104,7 @@ class MemoryManager:
         entry_type = latest_entry.get("type")
         value = latest_entry.get("value")
 
-        if entry_type and value:
+        if entry_type == "mood" and value:
             memory.append(f"Pablo is currently feeling {value}")
 
         return memory

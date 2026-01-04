@@ -50,11 +50,21 @@ class VegaLLM:
         context: str,
         question: str,
     ) -> str:
+        if isinstance(memory, list):
+            if memory:
+                memory_text = "Relevant memory:\n" + "\n".join(
+                    f"- {item}" for item in memory
+                )
+            else:
+                memory_text = ""
+        else:
+            memory_text = memory
+
         response = self.chat_chain.invoke(
             {
                 "date": date,
                 "instructions": instructions,
-                "memory": memory,
+                "memory": memory_text,
                 "context": context,
                 "question": question,
             }
