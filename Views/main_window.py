@@ -1,3 +1,4 @@
+# LIBRARY IMPORTS
 from PySide6.QtWidgets import (
     QMainWindow,
     QWidget,
@@ -15,11 +16,17 @@ from PySide6.QtCore import Qt, QSize
 from pathlib import Path
 
 
+# FILE IMPORTS
+from views.add_contact_dialog import AddContactDialog
+
+
 class VegaUI(QMainWindow):
-    def __init__(self, assets_images: Path, on_text, on_voice):
+    def __init__(self, assets_images: Path, assets_text: Path, on_text, on_voice):
+
         super().__init__()
 
         self.assets_images = assets_images
+        self.assets_text = assets_text
         self.voice_icon_idle = QIcon(str(self.assets_images / "listen.png"))
         self.voice_icon_listening = QIcon(
             str(self.assets_images / "listen_active.png")
@@ -85,14 +92,11 @@ class VegaUI(QMainWindow):
             self.voice_button.setIconSize(QSize(120, 120))
             self.voice_button.setStyleSheet("""
                 QPushButton {
-                    border: 4px solid #c31432;
-                    border-radius: 80px;
+                    border: none;
                     background-color: transparent;
-                }
-                QPushButton:hover {
-                    border-color: #ff2e55;
-                }
-            """)
+                    outline: none;
+                }                
+                """)
             self.voice_button.clicked.connect(self.on_voice)
             panel_layout.addWidget(self.voice_button, alignment=Qt.AlignCenter)
         except Exception:
@@ -113,6 +117,34 @@ class VegaUI(QMainWindow):
         self.clear_button.setToolTip("Clear")
         self.clear_button.clicked.connect(self._clear_text)
 
+        self.add_contact_button = QPushButton()
+        self.add_contact_button.setIcon(
+            QIcon(str(self.assets_images / "add_contact.png"))
+        )
+        self.add_contact_button.setIconSize(QSize(36, 36))
+        self.add_contact_button.setFixedSize(40, 40)
+        self.add_contact_button.setToolTip("Add contact")
+        self.add_contact_button.clicked.connect(self._open_add_contact_dialog)
+
+
+        self.add_contact_button.setStyleSheet("""
+            QPushButton {
+                border: 2px solid #c31432;
+                border-radius: 20px;
+                background-color: #FBFBFB;
+                padding: 2px;
+            }
+            QPushButton:hover {
+                background-color: #ffe6eb;
+            }
+            QPushButton:pressed {
+                background-color: #ffccd5;
+                border-color: #ff2e55;
+            }
+        """)
+
+
+
         for button in (self.copy_button, self.clear_button):
             button.setStyleSheet("""
                 QPushButton {
@@ -131,6 +163,7 @@ class VegaUI(QMainWindow):
             """)
 
         text_buttons_layout = QHBoxLayout()
+        text_buttons_layout.addWidget(self.add_contact_button)
         text_buttons_layout.addStretch()
         text_buttons_layout.addWidget(self.copy_button)
         text_buttons_layout.addWidget(self.clear_button)
@@ -173,6 +206,7 @@ class VegaUI(QMainWindow):
         send_button.clicked.connect(self._send_text)
         input_bar.addWidget(send_button)
 
+
         panel_layout.addLayout(input_bar)
 
         # ===== MAIN LAYOUT =====
@@ -201,6 +235,11 @@ class VegaUI(QMainWindow):
             self.voice_button.setIcon(self.voice_icon_listening)
         else:
             self.voice_button.setIcon(self.voice_icon_idle)
+    
+    def _open_add_contact_dialog(self):
+        dialog = AddContactDialog(self.assets_text, self)
+        dialog.exec()
+
 
     # ===== INTERNAL CALLBACKS =====
     def _send_text(self):

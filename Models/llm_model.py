@@ -50,7 +50,7 @@ class VegaLLM:
         context: str,
         question: str,
     ) -> str:
-        return self.chat_chain.invoke(
+        response = self.chat_chain.invoke(
             {
                 "date": date,
                 "instructions": instructions,
@@ -60,14 +60,28 @@ class VegaLLM:
             }
         )
 
+        if isinstance(response, str):
+            return response
+
+        return response.content
+
+
+
     def summarize(
         self,
         summary_instructions: str,
         context: str,
     ) -> str:
-        return self.summary_chain.invoke(
+        response = self.summary_chain.invoke(
             {
                 "summary_instructions": summary_instructions,
                 "context": context,
             }
         )
+
+        if isinstance(response, str):
+            return response
+
+        return response.content
+
+

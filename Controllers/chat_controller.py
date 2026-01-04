@@ -124,4 +124,36 @@ def handle_chat(
                     )
                 return
 
-    # Cut / summari
+
+    if "corta" in normalized_input:
+        if context is None:
+            context = ""
+
+        summary = llm.summarize(instructions_summary, context)
+        summary = unidecode(summary)
+
+        memory.save_summary(assets_text, summary)
+
+        ui.show_text("\nVega: Resumen guardado en memoria.\n")
+        audio_service.speak("Resumen guardado en memoria.")
+        return
+
+    # Normal conversation
+    if context is None:
+        context = ""
+
+    result = llm.respond(
+        current_date,
+        instructions,
+        memory_text,
+        context,
+        user_input,
+    )
+    result = unidecode(result)
+
+    ui.show_text(f"\nVega: {result}\n")
+    audio_service.speak(result)
+
+    context += f"Pablo: {user_input}\nVega: {result}\n"
+    context_holder["context"] = context
+

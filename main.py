@@ -11,9 +11,9 @@ from models.llm_model import VegaLLM
 from views.main_window import VegaUI
 from audio.audio_service import AudioService
 from models.services.weather_service import CITIES
-from models.services.messaging_service import CONTACTS
 from controllers.chat_controller import handle_chat
 from controllers.voice_controller import recognize_voice
+from models.services.contacts_service import get_contacts
 
 
 # ASSET PATHS
@@ -40,12 +40,13 @@ def main():
             ui,
             audio_service,
             llm,
-            CONTACTS,
+            get_contacts(ASSETS_TEXT),
             CITIES,
             ASSETS_TEXT,
             current_date,
             context_holder,
         )
+
 
     def handle_voice_input():
         global voice_thread
@@ -54,10 +55,12 @@ def main():
     app = QApplication(sys.argv)
 
     ui = VegaUI(
-        ASSETS_IMAGES,
-        on_text=handle_text_input,
-        on_voice=handle_voice_input,
-    )
+            ASSETS_IMAGES,
+            ASSETS_TEXT,
+            on_text=handle_text_input,
+            on_voice=handle_voice_input,
+        )
+
 
     ui.show()
     sys.exit(app.exec())
