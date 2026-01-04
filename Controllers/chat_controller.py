@@ -3,7 +3,6 @@ from unidecode import unidecode
 import json
 
 # FILE IMPORTS
-from models import memory
 from models.services.search_service import (
     SEARCH_PROVIDERS,
     clean_search_query,
@@ -30,7 +29,9 @@ def handle_chat(
     context = context_holder["context"]
 
     # Load system instructions (only system prompt)
-    instructions = memory.read_instructions(assets_text)
+    instructions = (
+        assets_text / "instructions.txt"
+    ).read_text(encoding="utf-8")
 
     # Search
     if "busca" in normalized_input:
@@ -126,21 +127,7 @@ def handle_chat(
                     )
                 return
 
-    # Manual memory snapshot (legacy, controlled)
-    if "corta" in normalized_input:
-        if context is None:
-            context = ""
 
-        instructions_summary = memory.read_instructions_summary(assets_text)
-
-        summary = llm.summarize(instructions_summary, context)
-        summary = unidecode(summary)
-
-        memory.save_summary(assets_text, summary)
-
-        ui.show_text("\nVega: Resumen guardado en memoria.\n")
-        audio_service.speak("Resumen guardado en memoria.")
-        return
 
     # Normal conversation (LEVEL 2 FLOW)
     if context is None:

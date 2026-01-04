@@ -142,14 +142,32 @@ class MemoryManager:
 
 
 
-    def _apply_temporal_updates(self, temporal_updates: Dict) -> None:
+    def _apply_temporal_updates(self, temporal_updates: dict) -> None:
         additions = temporal_updates.get("add", [])
 
         entries = self.temporal_memory.setdefault("entries", [])
 
         for item in additions:
+            if self._is_duplicate_temporal_entry(item, entries):
+                continue
+
             entries.append({
                 "type": "mood",
                 "value": item,
                 "date": datetime.now().strftime("%Y-%m-%d")
-            })
+        })
+
+    def _is_duplicate_temporal_entry(
+        self,
+        new_value: str,
+        existing_entries: list[dict],
+        lookback: int = 5,
+    ) -> bool:
+        normalized_new = new_value.lower().strip()
+
+        for entry in existing_entries[-lookback:]:
+            existing_value = entry.get("value", "").lower().strip()
+            if normalized_new == existing_value:
+                return True
+
+        return False
