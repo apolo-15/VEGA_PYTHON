@@ -8,3 +8,6 @@ assets_memory/*.json
 
 # User data
 assets_text/contacts.json
+
+# System instructions (user-specific)
+assets_text/instructions.txt
