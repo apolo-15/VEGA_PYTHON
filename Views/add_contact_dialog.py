@@ -101,8 +101,10 @@ class AddContactDialog(QDialog):
 
         contacts = get_contacts(self.assets_text)
 
-        for name, phone in contacts.items():
+        for name in sorted(contacts.keys()):
+            phone = contacts[name]
             self.contacts_list.addItem(f"{name}  —  {phone}")
+
 
     def _on_contact_selected(self):
         self.delete_button.setEnabled(
