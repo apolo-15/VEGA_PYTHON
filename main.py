@@ -25,7 +25,6 @@ from models.intent_classifier import IntentClassifier
 from models.memory_manager import MemoryManager
 
 
-
 # ASSET PATHS
 BASE_DIR = Path(__file__).resolve().parent
 ASSETS_IMAGES = BASE_DIR / "assets_images"
@@ -35,7 +34,7 @@ ASSETS_MEMORY = BASE_DIR / "assets_memory"
 # GLOBAL STATE
 voice_thread = None
 
-
+# MAIN FUNCTION
 def main():
     llm = VegaLLM()
     audio_service = AudioService()
