@@ -1,3 +1,12 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# Voice listener thread module for the Vega AI assistant application.
+# Implements a QThread to handle voice recognition in the background,
+# emitting signals when text is recognized or when listening is finished.
+# Minimun logic is handled in this file; most functionality is delegated to controllers and models.
+
+# LIBRARY IMPORTS
 from PySide6.QtCore import QThread, Signal
 
 
