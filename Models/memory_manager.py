@@ -155,28 +155,48 @@ class MemoryManager:
     def _apply_contextual_updates(self, contextual_updates: Dict) -> None:
         additions = contextual_updates.get("add", [])
 
-        notes = self.contextual_memory.setdefault("recurring_topics", [])
+        if not additions:
+            return
+
+        topics = self.contextual_memory.setdefault("recurring_topics", [])
 
         for item in additions:
-            if item not in notes:
-                notes.append(item)
+            normalized = item.lower().strip()
+
+            # If there is already a topic, it normalizes it
+            if topics:
+                topics[0] = normalized
+            else:
+                topics.append(normalized)
+
+            # We only keep one topic at a time
+            break
+
 
 
 
     def _apply_temporal_updates(self, temporal_updates: dict) -> None:
         additions = temporal_updates.get("add", [])
 
+        if not additions:
+            return
+
         entries = self.temporal_memory.setdefault("entries", [])
+        today = datetime.now().strftime("%Y-%m-%d")
 
         for item in additions:
-            if self._is_duplicate_temporal_entry(item, entries):
-                continue
+            # Delete any mood entry for today to avoid duplicates
+            entries[:] = [
+                entry for entry in entries
+                if entry.get("date") != today
+            ]
 
             entries.append({
                 "type": "mood",
                 "value": item,
-                "date": datetime.now().strftime("%Y-%m-%d")
-        })
+                "date": today
+            })
+
 
     def _is_duplicate_temporal_entry(
         self,
