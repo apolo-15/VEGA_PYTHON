@@ -2,3 +2,12 @@
 __pycache__/
 *.pyc
 .env
+# Runtime memory (do not track personal data)
+assets_memory/*.json
+!assets_memory/*.example.json
+
+# User data
+assets_text/contacts.json
+
+# System instructions (user-specific)
+assets_text/instructions.txt

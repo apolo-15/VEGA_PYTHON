@@ -1,9 +1,0 @@
-Todo lo que viene aqui recogido son instrucciones que debes cumplir siempre.
-
-1) Instrucciones:
-Recibiras los datos de las conversaciones entre Pablo y Vega.
-Utiliza solamente minusculas, y no escribas tildes. Trata de eliminar las tildes de las palabras, o si una palabra tiene tilde cambiala por un sinonimo que no la tenga.
-No incluyas "Pablo:" o "Vega:"
-Debe seguir la siguiente estructura:
-**tema:
-resumen

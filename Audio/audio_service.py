@@ -40,18 +40,24 @@ class AudioService:
         if not self._tts_available or not text:
             return
 
-        self._init_tts()
-
-        if self._engine is None:
-            return
-
         try:
+            engine = pyttsx3.init()
+            engine.setProperty("rate", 180)
+            engine.setProperty("volume", 1.0)
+
+            voices = engine.getProperty("voices")
+            if voices:
+                engine.setProperty("voice", voices[0].id)
+
             text = unidecode(text)
-            self._engine.say(text)
-            self._engine.runAndWait()
+            engine.say(text)
+            engine.runAndWait()
+            engine.stop()
+
         except Exception as error:
             print(f"[AudioService] Error while speaking: {error}")
             self._tts_available = False
+
 
     def listen(self, timeout=None):
         """

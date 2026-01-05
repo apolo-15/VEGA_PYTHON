@@ -1,6 +1,8 @@
+# LIBRS IMPORTS
 from unidecode import unidecode
+import json
 
-from models import memory
+# FILE IMPORTS
 from models.services.search_service import (
     SEARCH_PROVIDERS,
     clean_search_query,
@@ -9,7 +11,6 @@ from models.services.search_service import (
 from models.services.playback_service import play_youtube
 from models.services.weather_service import get_weather
 from models.services.messaging_service import send_whatsapp
-
 
 def handle_chat(
     user_input,
@@ -21,14 +22,16 @@ def handle_chat(
     assets_text,
     current_date,
     context_holder,
-):
+    intent_classifier,
+    memory_manager,
+    ):
     normalized_input = user_input.lower()
     context = context_holder["context"]
 
-    # Load memory and instructions
-    instructions = memory.read_instructions(assets_text)
-    instructions_summary = memory.read_instructions_summary(assets_text)
-    memory_text = memory.read_memory(assets_text)
+    # Load system instructions (only system prompt)
+    instructions = (
+        assets_text / "instructions.txt"
+    ).read_text(encoding="utf-8")
 
     # Search
     if "busca" in normalized_input:
@@ -125,35 +128,43 @@ def handle_chat(
                 return
 
 
-    if "corta" in normalized_input:
-        if context is None:
-            context = ""
 
-        summary = llm.summarize(instructions_summary, context)
-        summary = unidecode(summary)
-
-        memory.save_summary(assets_text, summary)
-
-        ui.show_text("\nVega: Resumen guardado en memoria.\n")
-        audio_service.speak("Resumen guardado en memoria.")
-        return
-
-    # Normal conversation
+    # Normal conversation (LEVEL 2 FLOW)
     if context is None:
         context = ""
+
+    intent = intent_classifier.classify(user_input)
+    relevant_memory = memory_manager.get_relevant_memory(intent)
 
     result = llm.respond(
         current_date,
         instructions,
-        memory_text,
+        relevant_memory,
         context,
         user_input,
     )
+
     result = unidecode(result)
 
     ui.show_text(f"\nVega: {result}\n")
     audio_service.speak(result)
 
+    # ---- MEMORY PROPOSAL (LEVEL 2 WRITE) ----
+    memory_proposal_instructions = (
+        assets_text / "instructions_memory_proposal.txt"
+    ).read_text(encoding="utf-8")
+
+    proposal_raw = llm.summarize(
+        memory_proposal_instructions,
+        context + f"Pablo: {user_input}\nVega: {result}\n"
+    )
+
+    try:
+        proposal = json.loads(proposal_raw)
+        memory_manager.apply_memory_updates(proposal)
+    except Exception:
+        pass
+    # ----------------------------------------
+
     context += f"Pablo: {user_input}\nVega: {result}\n"
     context_holder["context"] = context
-
