@@ -2,7 +2,7 @@ PySide6
 langchain
 langchain-ollama
 ollama
-speechrecognition
+SpeechRecognition
 pyttsx3
 pywhatkit
 wikipedia
