@@ -1,3 +1,13 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# Voice controller for handling voice input recognition.
+# Uses a separate thread to listen for voice input.
+# Processes recognized text and delegates to chat controller.
+# Designed to be called from main application loop.
+
+
+# PROJECT IMPORTS
 from audio.voice_listener import VoiceListenerThread
 
 

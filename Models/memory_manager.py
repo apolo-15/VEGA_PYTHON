@@ -1,3 +1,14 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# Manages the memory system for the Vega AI assistant.
+# Handles loading, retrieving, and updating different types of memory: core, contextual, and temporal.
+# Memory is stored in JSON files within the specified assets memory directory.
+# Provides methods to get relevant memory based on intent and to clean up old temporal memory entries.
+# Memory updates can be applied based on new information received during interactions.
+
+
+## LIBRARY IMPORTS
 from pathlib import Path
 import json
 from typing import List, Dict
@@ -33,34 +44,9 @@ class MemoryManager:
             relevant_memory.extend(self._get_temporal_memory())
 
         return relevant_memory
-
-
     
 
-    def cleanup_temporal_memory(self, max_age_days: int = 7) -> None:
-        entries = self.temporal_memory.get("entries", [])
 
-        if not entries:
-            return
-
-        cutoff_date = datetime.now() - timedelta(days=max_age_days)
-
-        cleaned_entries = []
-
-        for entry in entries:
-            entry_date_str = entry.get("date")
-            if not entry_date_str:
-                continue
-
-            try:
-                entry_date = datetime.strptime(entry_date_str, "%Y-%m-%d")
-            except ValueError:
-                continue
-
-            if entry_date >= cutoff_date:
-                cleaned_entries.append(entry)
-
-        self.temporal_memory["entries"] = cleaned_entries
 
 
     def _load_json(self, filename: str) -> Dict:
@@ -152,6 +138,7 @@ class MemoryManager:
             if item not in traits:
                 traits.append(item)
 
+
     def _apply_contextual_updates(self, contextual_updates: Dict) -> None:
         additions = contextual_updates.get("add", [])
 
@@ -171,8 +158,6 @@ class MemoryManager:
 
             # We only keep one topic at a time
             break
-
-
 
 
     def _apply_temporal_updates(self, temporal_updates: dict) -> None:
@@ -196,6 +181,31 @@ class MemoryManager:
                 "value": item,
                 "date": today
             })
+
+    def cleanup_temporal_memory(self, max_age_days: int = 7) -> None:
+        entries = self.temporal_memory.get("entries", [])
+
+        if not entries:
+            return
+
+        cutoff_date = datetime.now() - timedelta(days=max_age_days)
+
+        cleaned_entries = []
+
+        for entry in entries:
+            entry_date_str = entry.get("date")
+            if not entry_date_str:
+                continue
+
+            try:
+                entry_date = datetime.strptime(entry_date_str, "%Y-%m-%d")
+            except ValueError:
+                continue
+
+            if entry_date >= cutoff_date:
+                cleaned_entries.append(entry)
+
+        self.temporal_memory["entries"] = cleaned_entries
 
 
     def _is_duplicate_temporal_entry(

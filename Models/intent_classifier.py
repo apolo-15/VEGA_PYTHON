@@ -1,3 +1,9 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# Intent Classifier Model
+# Classifies user intents into categories such as 'project', 'emotional', and 'personal' based on keyword matching.
+
 class IntentClassifier:
     def __init__(self) -> None:
         self.project_keywords = {

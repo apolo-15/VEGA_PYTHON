@@ -1,3 +1,13 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# Audio service module for the Vega AI assistant application.
+# Provides text-to-speech and speech-to-text functionalities using pyttsx3 and SpeechRecognition
+# with graceful error handling to ensure the application remains functional even if audio services fail.
+# Minimun logic is handled in this file; most functionality is delegated to controllers and models.
+
+
+# LIBRARY IMPORTS
 import pyttsx3
 from unidecode import unidecode
 import speech_recognition as sr
@@ -9,9 +19,9 @@ class AudioService:
         self._tts_available = True
 
     def _init_tts(self):
-        """
-        Initializes the TTS engine lazily, only when needed.
-        """
+        
+        # Initializes the TTS engine lazily, only when needed.
+        
         if self._engine is not None:
             return
 
@@ -33,10 +43,10 @@ class AudioService:
             self._engine = None
 
     def speak(self, text: str):
-        """
-        Converts text to speech.
-        Fails silently if audio is not available.
-        """
+        
+        # Converts text to speech.
+        # Fails silently if audio is not available.
+        
         if not self._tts_available or not text:
             return
 
@@ -60,10 +70,10 @@ class AudioService:
 
 
     def listen(self, timeout=None):
-        """
-        Listens through the microphone and returns recognized text in lowercase.
-        Returns None if recognition fails or no speech is detected.
-        """
+        
+        # Listens through the microphone and returns recognized text in lowercase.
+        # Returns None if recognition fails or no speech is detected.
+        
         try:
             recognizer = sr.Recognizer()
 

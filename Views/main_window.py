@@ -1,3 +1,11 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# Main window for the Vega AI assistant application.
+# Provides the primary user interface for interacting with the assistant,
+# including text input/output and voice interaction.
+
+
 # LIBRARY IMPORTS
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -16,7 +24,7 @@ from PySide6.QtCore import Qt, QSize
 from pathlib import Path
 
 
-# FILE IMPORTS
+# PROJECT IMPORTS
 from views.add_contact_dialog import AddContactDialog
 
 
@@ -117,6 +125,8 @@ class VegaUI(QMainWindow):
         self.clear_button.setToolTip("Clear")
         self.clear_button.clicked.connect(self._clear_text)
 
+
+        # ===== ADD CONTACT BUTTON =====
         self.add_contact_button = QPushButton()
         self.add_contact_button.setIcon(
             QIcon(str(self.assets_images / "add_contact.png"))
@@ -194,6 +204,8 @@ class VegaUI(QMainWindow):
         """)
         input_bar.addWidget(self.text_input)
 
+
+        # ===== SEND BUTTON =====
         send_button = QPushButton("Send")
         send_button.setStyleSheet("""
             background-color: #c31432;

@@ -1,8 +1,20 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# Chat controller for handling user input and generating responses.
+# Delegates tasks to various services based on detected intents.
+# Minimal logic; most functionality is handled by models and services.
+# Handles search, media playback, weather info, messaging, and general conversation.
+# Uses intent classification and memory management for context-aware responses.
+# Responds via UI and audio service.
+# Designed to be called from main application loop.
+
+
 # LIBRS IMPORTS
 from unidecode import unidecode
 import json
 
-# FILE IMPORTS
+# PROJECT IMPORTS
 from models.services.search_service import (
     SEARCH_PROVIDERS,
     clean_search_query,
@@ -28,7 +40,7 @@ def handle_chat(
     normalized_input = user_input.lower()
     context = context_holder["context"]
 
-    # Load system instructions (only system prompt)
+    # Load system instructions for general conversation
     instructions = (
         assets_text / "instructions.txt"
     ).read_text(encoding="utf-8")
@@ -129,7 +141,7 @@ def handle_chat(
 
 
 
-    # Normal conversation (LEVEL 2 FLOW)
+    # Normal conversation 
     if context is None:
         context = ""
 
@@ -149,7 +161,7 @@ def handle_chat(
     ui.show_text(f"\nVega: {result}\n")
     audio_service.speak(result)
 
-    # ---- MEMORY PROPOSAL (LEVEL 2 WRITE) ----
+    # ==== MEMORY PROPOSAL ====
     memory_proposal_instructions = (
         assets_text / "instructions_memory_proposal.txt"
     ).read_text(encoding="utf-8")
@@ -164,7 +176,7 @@ def handle_chat(
         memory_manager.apply_memory_updates(proposal)
     except Exception:
         pass
-    # ----------------------------------------
+    # ===============================
 
     context += f"Pablo: {user_input}\nVega: {result}\n"
     context_holder["context"] = context

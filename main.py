@@ -1,3 +1,11 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# Main entry point for the Vega AI assistant application.
+# Sets up the application, initializes components, and starts the event loop.
+# Minimun logic is handled in this file; most functionality is delegated to controllers and models.
+
+
 # LIBRARY IMPORTS
 from datetime import datetime
 from pathlib import Path
@@ -17,7 +25,6 @@ from models.intent_classifier import IntentClassifier
 from models.memory_manager import MemoryManager
 
 
-
 # ASSET PATHS
 BASE_DIR = Path(__file__).resolve().parent
 ASSETS_IMAGES = BASE_DIR / "assets_images"
@@ -27,7 +34,7 @@ ASSETS_MEMORY = BASE_DIR / "assets_memory"
 # GLOBAL STATE
 voice_thread = None
 
-
+# MAIN FUNCTION
 def main():
     llm = VegaLLM()
     audio_service = AudioService()

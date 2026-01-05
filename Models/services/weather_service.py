@@ -1,6 +1,14 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# Provides weather data retrieval functionality for the Vega AI assistant.
+# Uses the Open-Meteo API to fetch current weather information for predefined cities.
+
+
+# LIBRARY IMPORTS
 import requests
 
-
+# PREDEFINED CITIES WITH THEIR COORDINATES
 CITIES = {
     "sevilla": (37.3886, -5.9823),
     "madrid": (40.4168, -3.7038),

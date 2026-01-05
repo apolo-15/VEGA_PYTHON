@@ -1,78 +1,165 @@
-VEGA
-🇬🇧 English
-Overview
+# VEGA
 
-VEGA is a desktop AI assistant built in Python, developed as a personal and experimental project.
+## Overview
 
-Its main purpose is to explore how a local Large Language Model (LLM) can be integrated into a desktop graphical interface, combining voice interaction, text-based communication, and external services, while preserving a clean and maintainable codebase.
+VEGA is a desktop AI assistant developed in Python as a personal and experimental project.
 
-The project focuses on architectural clarity, modularity, and progressive refactoring rather than on delivering a finished or commercial product.
+Its purpose is to explore the integration of a **local Large Language Model (LLM)** into a desktop graphical application, combining text interaction, voice input/output, and independent services, while keeping a clear and maintainable architecture.
 
-What VEGA Does
+VEGA is not intended as a finished product. It is a learning-oriented project focused on structure, refactoring, and design decisions.
 
-VEGA runs a local language model using Ollama and LangChain and exposes it through a desktop application built with PySide6 (Qt).
+---
 
-Interaction can happen either by text or voice. Voice input and audio output are handled asynchronously to keep the interface responsive. Around the core LLM, several independent services are integrated, such as weather queries, media playback, web searches, and messaging.
+## Core Technologies
 
-Contacts and other persistent data are stored locally and can be managed visually from the GUI, without modifying the code.
+- Python
+- PySide6 (Qt) for the graphical interface
+- Ollama for running local language models
+- LangChain for LLM integration
+- SpeechRecognition and pyttsx3 for voice interaction
 
-Project Structure
+---
 
-The codebase is organized to keep responsibilities clearly separated.
+## Functionality
 
-The views package contains all user interface components built with PySide6.
-The controllers package handles application flow and coordinates interactions between UI, services, and the language model.
-The models package contains the LLM integration and memory-related logic.
-The services package groups independent features such as weather, playback, messaging, and contact management.
+VEGA exposes a local LLM through a desktop application.
 
-This structure allows the project to grow without accumulating unnecessary coupling or technical debt.
+Interaction modes:
+- text-based chat
+- voice input with spoken responses
 
-Philosophy
+Around the LLM, several independent services are integrated, such as:
+- weather queries
+- media playback
+- web searches
+- messaging and contact management
 
-VEGA is intentionally designed as a learning-driven project.
+All data is stored locally. Persistent information can be managed from the GUI without modifying the source code.
 
-It favors readability, refactoring, and explicit design decisions over speed or feature count. The goal is not to build a finished assistant, but to maintain a solid foundation that can evolve over time as new ideas and improvements are explored.
+---
 
-🇪🇸 Español
-Descripción general
+## Project Structure
 
-VEGA es un asistente de escritorio desarrollado en Python, concebido como un proyecto personal de aprendizaje y experimentación.
+The codebase follows a modular structure with clear responsibility boundaries:
 
-Su objetivo principal es explorar cómo integrar un modelo de lenguaje local (LLM) en una interfaz gráfica de escritorio, combinando interacción por voz, comunicación por texto y distintos servicios externos, manteniendo una base de código clara y mantenible.
+- views  
+  user interface components built with PySide6
 
-El proyecto prioriza la arquitectura, la modularidad y la refactorización progresiva frente a la idea de producto terminado.
+- controllers  
+  application flow and coordination between UI, services and the LLM
 
-Qué hace VEGA
+- models  
+  LLM integration and memory-related logic
 
-VEGA ejecuta un modelo de lenguaje local mediante Ollama y LangChain, integrado en una aplicación de escritorio construida con PySide6 (Qt).
+- services  
+  independent features such as weather, messaging or playback
 
-La interacción puede realizarse tanto por texto como por voz. La entrada de audio y la salida por voz se gestionan de forma asíncrona para no bloquear la interfaz. Alrededor del LLM se integran distintos servicios independientes, como consultas meteorológicas, reproducción multimedia, búsquedas web y mensajería.
+This structure is designed to allow growth without unnecessary coupling.
 
-Los contactos y otros datos persistentes se almacenan localmente y pueden gestionarse de forma visual desde la propia interfaz, sin necesidad de modificar el código.
+---
 
-Estructura del proyecto
+## Design Principles
 
-El código está organizado para mantener una separación clara de responsabilidades.
+- clarity over cleverness  
+- explicit architecture decisions  
+- modular and refactor-friendly code  
+- learning and experimentation over feature completeness
 
-El paquete views contiene todos los componentes de la interfaz gráfica desarrollados con PySide6.
-El paquete controllers gestiona el flujo de la aplicación y coordina la interacción entre la interfaz, los servicios y el modelo de lenguaje.
-El paquete models incluye la integración del LLM y la lógica relacionada con la memoria.
-El paquete services agrupa las funcionalidades independientes como el tiempo, la reproducción, la mensajería y la gestión de contactos.
+VEGA prioritizes maintainability and readability over speed or scope.
 
-Esta organización facilita la evolución del proyecto sin generar acoplamientos innecesarios.
+---
 
-Filosofía
+## Notes
 
-VEGA está planteado deliberadamente como un proyecto orientado al aprendizaje.
+VEGA is intentionally local-first and experimental.
 
-Se da prioridad a la legibilidad del código, a la refactorización y a decisiones de diseño explícitas, por encima de la rapidez o del número de funcionalidades. No se trata de construir un asistente cerrado, sino de mantener una base sólida sobre la que seguir experimentando y mejorando con el tiempo.
+Its value lies in the architectural exploration and the evolution of the codebase, not in delivering a commercial-grade assistant.
 
 
 
-////
-NAMING CONVENTIONS
+# VEGA
 
-VEGA – Naming Conventions
+## Descripción general
+
+VEGA es un asistente de escritorio desarrollado en Python como un proyecto personal y experimental.
+
+Su propósito es explorar la integración de un **modelo de lenguaje local (LLM)** en una aplicación gráfica de escritorio, combinando interacción por texto, entrada y salida por voz, y servicios independientes, manteniendo una arquitectura clara y mantenible.
+
+VEGA no está concebido como un producto terminado. Es un proyecto orientado al aprendizaje, centrado en la estructura, la refactorización y las decisiones de diseño.
+
+---
+
+## Tecnologías principales
+
+- Python
+- PySide6 (Qt) para la interfaz gráfica
+- Ollama para la ejecución de modelos de lenguaje locales
+- LangChain para la integración del LLM
+- SpeechRecognition y pyttsx3 para la interacción por voz
+
+---
+
+## Funcionalidad
+
+VEGA expone un modelo de lenguaje local a través de una aplicación de escritorio.
+
+Modos de interacción:
+- chat por texto
+- entrada por voz con respuestas habladas
+
+Alrededor del LLM se integran distintos servicios independientes, como:
+- consultas meteorológicas
+- reproducción multimedia
+- búsquedas web
+- mensajería y gestión de contactos
+
+Toda la información se almacena localmente. Los datos persistentes pueden gestionarse desde la interfaz gráfica sin modificar el código fuente.
+
+---
+
+## Estructura del proyecto
+
+La base de código sigue una estructura modular con responsabilidades bien definidas:
+
+- views  
+  componentes de la interfaz gráfica desarrollados con PySide6
+
+- controllers  
+  control del flujo de la aplicación y coordinación entre la interfaz, los servicios y el LLM
+
+- models  
+  integración del LLM y lógica relacionada con la memoria
+
+- services  
+  funcionalidades independientes como tiempo, mensajería o reproducción
+
+Esta estructura está pensada para permitir la evolución del proyecto sin generar acoplamientos innecesarios.
+
+---
+
+## Principios de diseño
+
+- claridad frente a ingenio  
+- decisiones arquitectónicas explícitas  
+- código modular y fácil de refactorizar  
+- aprendizaje y experimentación por encima de la completitud funcional
+
+VEGA prioriza la mantenibilidad y la legibilidad frente a la rapidez o al alcance de funcionalidades.
+
+---
+
+## Notas
+
+VEGA es intencionadamente local y experimental.
+
+Su valor reside en la exploración arquitectónica y en la evolución de la base de código, no en la entrega de un asistente de nivel comercial.
+
+
+
+
+# NAMING CONVENTIONS
+
+## VEGA – Naming Conventions
 =========================
 
 This document describes the naming conventions used consistently

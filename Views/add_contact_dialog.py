@@ -1,3 +1,11 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# Dialog for adding, viewing, and deleting contacts in the Vega AI assistant application.
+# Provides a user interface for managing contacts stored in a text file.
+
+
+# LIBRARY IMPORTS
 from pathlib import Path
 from PySide6.QtWidgets import (
     QDialog,
@@ -10,6 +18,7 @@ from PySide6.QtWidgets import (
     QListWidget,
 )
 
+# PROJECT IMPORTS
 from models.services.contacts_service import add_contact, get_contacts, delete_contact
 
 
