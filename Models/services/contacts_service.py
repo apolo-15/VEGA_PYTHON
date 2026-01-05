@@ -1,3 +1,11 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# Provides contact management functionality for the Vega AI assistant.
+# Allows adding, retrieving, and deleting contacts stored in a JSON file.
+
+
+# LIBRARY IMPORTS
 import json
 from pathlib import Path
 

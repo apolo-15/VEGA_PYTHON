@@ -1,3 +1,11 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# Provides YouTube playback functionality for the Vega AI assistant.
+# Uses the pywhatkit library to play YouTube videos based on user queries.
+
+
+# LIBRARY IMPORTS
 import pywhatkit
 
 

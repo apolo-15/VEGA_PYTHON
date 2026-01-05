@@ -1,3 +1,11 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# Provides WhatsApp messaging functionality for the Vega AI assistant.
+# Uses web automation to send messages via WhatsApp Web.
+
+
+# LIBRARY IMPORTS
 import webbrowser
 import time
 import pyautogui as pag
