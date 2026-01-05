@@ -1,3 +1,12 @@
+# PABLO BOTELLA JIMÉNEZ
+# Vega AI Assistant Application
+
+# LLM Model Wrapper
+# Wraps the Ollama LLM for use in the Vega AI assistant application.
+# Provides methods for generating responses and summaries based on prompts.
+# Uses LangChain for prompt management.
+
+# LIBRARY IMPORTS
 from langchain_ollama import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -6,6 +15,8 @@ class VegaLLM:
     def __init__(self, model_name: str = "llama3.2"):
         self.model = OllamaLLM(model=model_name)
 
+
+        # CHAT PROMPT TEMPLATES
         self.chat_prompt_template = """
         Today's date: {date}
 
@@ -23,7 +34,8 @@ class VegaLLM:
 
         Answer:
         """
-
+        
+        # SUMMARY PROMPT TEMPLATES
         self.summary_prompt_template = """
         Follow these instructions:
         {summary_instructions}
